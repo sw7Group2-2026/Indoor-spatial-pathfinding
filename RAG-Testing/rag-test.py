@@ -3,9 +3,8 @@ import chromadb
 from chromadb.utils import embedding_functions
 import os
 
-current = Path(__file__).resolve()
-
-CHROMA_PATH = os.path.join(current, "chroma_db") 
+current = Path(__file__).resolve().parent
+CHROMA_PATH = str(current / "chroma_db")
 COLLECTION_NAME = "Rooms"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
@@ -20,7 +19,7 @@ class Room():
 rooms: list = [Room("2.2.042",["TV","Table","Power"],"study room for students at software sudents at 7th semester."), 
                Room("2.2.041",["TV","Table","Power"],"study room for students at software sudents at 7th semester."), 
                Room("2.2.040",["TV","Table","Power"],"study room for students at software sudents at 7th semester."), 
-               Room("2.2.038",["Toilet","Sink","Paper"],"Male and female toilets and sanitation.")]
+               Room("2.2.038",["Toilet","Sink","Paper Towls"],"Male and female toilets and sanitation.")]
 
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)
@@ -42,8 +41,12 @@ collection = client.get_or_create_collection(
 )
 
 ids = [room.roomID for room in rooms]
-documents = [room.description + room.utilities for room in rooms]
-metadatas = [room for room in rooms]
+documents = [room.description + " Utilities: " + ", ".join(room.utilities) for room in rooms]
+metadatas = [    {
+        "roomID": room.roomID,
+        "utilities": ", ".join(room.utilities),
+        "query": room.querry
+    } for room in rooms]
 
 batch_size = 100
 for i in range(0, len(ids), batch_size):

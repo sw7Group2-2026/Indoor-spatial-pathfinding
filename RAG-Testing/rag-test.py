@@ -16,10 +16,10 @@ class Room():
         self.querry = "shortes.path.room(" + self.roomID +")"
 
 
-rooms: list = [Room("2.2.042",["TV","Table","Power"],"study room for students at software sudents at 7th semester."), 
-               Room("2.2.041",["TV","Table","Power"],"study room for students at software sudents at 7th semester."), 
-               Room("2.2.040",["TV","Table","Power"],"study room for students at software sudents at 7th semester."), 
-               Room("2.2.038",["Toilet","Sink","Paper Towls"],"Male and female toilets and sanitation.")]
+rooms: list = [Room("2.2.042",["TV","Table","Power"],"study room for students at software students at 7th semester."), 
+               Room("2.2.041",["TV","Table","Power"],"study room for students at software students at 7th semester."), 
+               Room("2.2.040",["TV","Table","Power"],"study room for students at software students at 7th semester."), 
+               Room("2.2.038",["Toilet","Sink","Paper Towls"],"Toilets")]
 
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)

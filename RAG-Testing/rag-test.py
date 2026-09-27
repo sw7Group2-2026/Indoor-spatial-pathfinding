@@ -44,6 +44,7 @@ ids = [room.roomID for room in rooms]
 documents = [room.description + " Utilities: " + ", ".join(room.utilities) for room in rooms]
 metadatas = [    {
         "roomID": room.roomID,
+        "description": room.description,
         "utilities": ", ".join(room.utilities),
         "query": room.querry
     } for room in rooms]

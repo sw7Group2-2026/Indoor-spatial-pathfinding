@@ -8,8 +8,3 @@ def main():
     query = input("Insert query to ai:\n")
     response = ai.prompt(query, system_prompt)
     print(response)
-
-
-# Just so people can run the file with python and without uv
-if __name__ == "__main__":
-    main()

@@ -48,6 +48,4 @@ If you don't already have `uv` installed, follow the official installation guide
 
 https://docs.astral.sh/uv/getting-started/installation/
 
-Once `uv` is installed, navigate to the `LLM-Testing` directory and then go into src folder.
-
-When inside src run `uv run python main.py` and it should work.
+Once `uv` is installed, just write uv run llm-testing and it should work.

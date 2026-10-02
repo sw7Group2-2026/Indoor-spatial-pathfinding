@@ -1,0 +1,32 @@
+services:
+  py:
+    build:
+      context: ./Python
+      dockerfile: Dockerfile
+    env_file: ".env"
+    stdin_open: true
+    tty: true
+
+  postgis-db:
+    image: postgis/postgis:18-3.6
+
+    environment:
+      POSTGRES_DB: ${POSTGIS_DB}
+      POSTGRES_USER: ${POSTGIS_USER}
+      POSTGRES_PASSWORD: ${POSTGIS_PASSWORD}
+
+    ports:
+      - "127.0.0.1:5433:5432"
+
+    volumes:
+      - postgis_data:/var/lib/postgresql
+      - ./Database/sql:/docker-entrypoint-initdb.d:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgis_data:

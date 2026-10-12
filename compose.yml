@@ -6,7 +6,9 @@ services:
     env_file: ".env"
     stdin_open: true
     tty: true
-
+    volumes:
+      - ./Python:/usr/src/app
+      
   postgis-db:
     image: postgis/postgis:18-3.6
 

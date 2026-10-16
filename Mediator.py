@@ -28,6 +28,7 @@ class ConcreteMediator(Mediator):
             x = request.query_params.get("x")
             y = request.query_params.get("y")
             print("floor:", floor, ", x:",x,", y:",y)
+            text = "floor:", floor, ", x:",x,", y:",y
         return text
 mediator = ConcreteMediator() 
 

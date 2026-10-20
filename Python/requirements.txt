@@ -1,5 +1,1 @@
-requests
-python-dotenv
-ifcopenshell
-shapely 
-numpy
+loguru

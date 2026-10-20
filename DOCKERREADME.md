@@ -1,188 +1,131 @@
-# Quick Docker Explanation
+# Python with Docker
 
-Docker **images** are templates containing everything needed to run an application.  
-A **container** is a running instance of an image.
+Docker provides a shared Python environment so everyone can run the project with the same dependencies.
 
-Think of it as:
+Run all commands below from the project root (the folder containing `compose.yml`.)
 
-**Image = template/environment**  
-**Container = where we actually run it**
+Running docker requires you to have Docker Desktop downloaded. Therefore you must have this downloaded and running before testing-
 
-`compose.yml` puts multiple Docker services together. For example, our project has a Python environment and a PostGIS database. Compose also lets these services communicate with each other and depend on each other.
+## Build the Python environment
 
-## Starting and Stopping
-
-Build and start everything:
+Ensure docker desktop is running. After, open terminal and run.
 
 ```bash
-docker compose up --build
+docker compose build py
 ```
 
-Run in the background:
+Build once before running code. Rebuild after changing `Python/requirements.txt` or the Dockerfile.
 
-```bash
-docker compose up --build -d
-```
+You do not need to rebuild when editing Python files.
 
-Stop everything:
-
-```bash
-docker compose down
-```
-
-> `docker compose down -v` also deletes Docker volumes. This means our local database data will be deleted, so only use `-v` when you want to reset the database.
-
-Check the services:
-
-```bash
-docker compose ps
-```
-
-## Running Python
-
-Run any Python file using our Python container:
+## Run Python code
 
 ```bash
 docker compose run --rm py python Folder-Name/filename.py
 ```
 
-For example:
+Paths are relative to the `Python/` directory, which is mounted inside the container. Code edits are available immediately without rebuilding.
+
+Each command creates a container using the built Python image, runs your script, and exits when the script finishes. You do not need to run `docker compose up` first.
+
+### What does --rm do?
+
+`--rm` automatically removes the temporary container after the script finishes, including when it exits with an error.
+
+It does not delete:
+
+- The built Docker image or its installed dependencies.
+- Your project files in the mounted `Python/` directory.
+- Files your script saves inside that mounted directory.
+
+Files saved elsewhere inside the temporary container are removed with it.
+
+Without `--rm`, the stopped container remains on your computer until you remove it manually.
+
+## Python dependencies
+
+Add dependencies to `Python/requirements.txt`, then rebuild:
 
 ```bash
-docker compose run --rm py python LLM-Testing/main.py
+docker compose build py
 ```
 
-`--rm` simply removes the temporary container after the program finishes.
+Subsequent runs use the updated image, but you only need to build everytime you update dependencies not the python code.
 
-### Python Dependencies
-
-Add required Python libraries to:
-
-```text
-Python/requirements.txt
-```
-
-They are installed when the Python Docker image is built. If dependencies change, rebuild with:
+## Stop the containers
 
 ```bash
-docker compose build
+docker compose down
 ```
 
-## PostGIS Database
+Stops and removes the project's containers and network. Your code and built images are kept.
 
-PostGIS is PostgreSQL with additional support for geographical/spatial data.
+When using `docker compose run --rm`, the container is removed automatically after the script finishes, so this is usually unnecessary.
 
-Our database exposes:
+## Environment variables
 
-```yaml
-ports:
-  - "127.0.0.1:5433:5432"
-```
+The Python container loads environment variables from the root `.env` file through the `env_file` setting in `compose.yml`.
 
-The left side (`5433`) is the port on our computer.  
-The right side (`5432`) is PostgreSQL's port inside Docker.
+Keep secrets out of version control. Use `.env.example` to document the required variables without including real credentials.
 
-From our computer:
+## Test the Python setup
+
+This test checks that Python runs inside Docker, dependencies are installed, and code changes apply without rebuilding.
+
+Before going through the test, ensure that Docker Desktop is running.
+
+### Test Python and dependencies
+
+Make sure `Python/requirements.txt` includes:
 
 ```text
-Host: localhost
-Port: 5433
+loguru
 ```
 
-From another Docker service, such as Python:
-
-```text
-Host: postgis-db
-Port: 5432
-```
-
-Docker Compose automatically creates a network where services can communicate using their service names.
-
-### Connecting with pgAdmin 4
-
-You can use pgAdmin 4 to connect to the PostGIS database running inside Docker.
-
-First, make sure the database is running:
+Build the image to install dependencies:
 
 ```bash
-docker compose up -d
+docker compose build py
 ```
 
-You can verify that the container is running and healthy with:
+Run the test:
 
 ```bash
-docker compose ps
+docker compose run --rm py python TEST/test.py
 ```
 
-Then open **pgAdmin 4** and select:
-
-**Servers → Register → Server**
-
-Under the **General** tab, choose any name for the connection, for example:
+The output should include:
 
 ```text
-Name: Local PostGIS
+Python is running successfully inside Docker!
+Python version: 3.x.x
 ```
 
-Under the **Connection** tab, enter:
+You should also see Loguru messages containing:
 
 ```text
-Host name/address: 127.0.0.1
-Port: 5433
-Maintenance database: <POSTGIS_DB>
-Username: <POSTGIS_USER>
-Password: <POSTGIS_PASSWORD>
+Loguru is working inside Docker!
+This is an intentional test warning.
 ```
 
-The values for `POSTGIS_DB`, `POSTGIS_USER`, and `POSTGIS_PASSWORD` are defined in the project's `.env` file.
+The Python version may vary. Loguru adds timestamps and log levels to its messages. The warning is intentional and does not indicate a failure.
 
-For example, if `.env` contains:
+### Test code changes without rebuilding
 
-```env
-POSTGIS_DB=mydb
-POSTGIS_USER=postgres
-POSTGIS_PASSWORD=mypassword
+Uncomment this line in `Python/TEST/test.py` and save the file:
+
+```python
+print("Code changes are available without rebuilding!", flush=True)
 ```
 
-the pgAdmin connection would be:
+Run the test again:
 
-```text
-Host name/address: 127.0.0.1
-Port: 5433
-Maintenance database: mydb
-Username: postgres
-Password: mypassword
+```bash
+docker compose run --rm py python TEST/test.py
 ```
 
-> Use port `5433` in pgAdmin because pgAdmin is running on our computer and connects through the Docker port mapping. Services running inside Docker instead connect to `postgis-db:5432`.
+The new message should appear immediately. No rebuild is needed because the `Python/` directory is mounted inside the container.
 
-After entering the connection details, click **Save**. The PostGIS database should now appear under **Servers** in pgAdmin.
+### Finish testing
 
-## SQL Files
-
-SQL files placed inside:
-
-```text
-Database/sql/
-```
-
-are mounted into:
-
-```text
-/docker-entrypoint-initdb.d/
-```
-
-inside the PostGIS container.
-
-When a **new database is initialized**, Postgres automatically executes these scripts. We can therefore use this folder for things such as creating tables, enabling extensions, or inserting initial data.
-
-For example:
-
-```text
-Database/
-└── sql/
-    ├── 01-enable-postgis.sql
-    └── 02-create-tables.sql
-```
-
-The actual database data is stored separately in the `postgis_data` Docker volume, allowing us to recreate containers without losing the database.
+When done with testing run `docker compose down` to ensure no containers are still running.

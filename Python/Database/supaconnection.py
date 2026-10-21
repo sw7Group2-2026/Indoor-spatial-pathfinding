@@ -7,23 +7,9 @@ from dotenv import load_dotenv
 # conn cursor as cur allows us to run code on the database.
 # For interesting docs check this: https://www.psycopg.org/psycopg3/docs/basic/usage.html
 
-
 load_dotenv()
 
-host = os.environ["PGHOST"]
-port = os.getenv("PGPORT")
-database = quote(os.environ["PGDATABASE"], safe="")
-user = quote(os.environ["PGUSER"], safe="")
-password = quote(os.environ["PGPASSWORD"], safe="")
-sslmode = "require"
-connect_timeout = 15
-
-# Encode user, password, and database so special characters work in the URL.
-connection_string = (
-    f"postgresql://{user}:{password}@{host}:{port}/{database}"
-    f"?sslmode={sslmode}&connect_timeout={connect_timeout}"
-)
-
+connection_string = os.getenv("DATABASE_URL")
 with psycopg.connect(connection_string) as conn:
     with conn.cursor() as cur:
         cur.execute("SELECT current_database(), current_user, now()")

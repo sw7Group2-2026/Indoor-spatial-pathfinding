@@ -6,7 +6,7 @@ from interfaces.test import run as test_interfaces
 from interpreter.test import run as test_interpreter
 
 # This is used for testing library imports
-from loguru import logger
+from loguru import logger # type: ignore
 
 
 test_device()

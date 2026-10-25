@@ -1,2 +1,2 @@
 def run():
-    print("device package works")
+    print("interpreter package works")

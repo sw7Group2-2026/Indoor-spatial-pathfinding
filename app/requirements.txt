@@ -1,1 +1,3 @@
 loguru
+psycopg[binary]
+python-dotenv

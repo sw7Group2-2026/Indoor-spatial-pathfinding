@@ -8,6 +8,7 @@ from interpreter.test import run as test_interpreter
 # This is used for testing library imports
 from loguru import logger # type: ignore
 
+from interpreter.llm_api import LLM_API
 
 test_device()
 test_device()
@@ -15,3 +16,11 @@ test_interfaces()
 test_interpreter()
 
 logger.debug("That's it, beautiful and simple logging!")
+
+# Example code that uses llama and allows you to insert query in terminal
+ai_model = "llama-3.1-8b-instruct"
+system_prompt = "You are a helpful assistant."
+ai = LLM_API(ai_model)
+query = input("Insert query to ai:\n")
+response = ai.prompt(query, system_prompt)
+print(response)

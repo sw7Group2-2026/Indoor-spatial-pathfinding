@@ -2,7 +2,7 @@
 # These are not proper tests, they are simply rudimentary tests i created to see if docker works for now.
 from database.test import run as test_database
 from device.test import run as test_device
-from interfaces.test import run as test_interfaces
+from abstractions.test import run as test_interfaces
 from interpreter.test import run as test_interpreter
 
 # This is used for testing library imports

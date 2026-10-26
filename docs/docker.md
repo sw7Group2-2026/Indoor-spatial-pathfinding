@@ -64,17 +64,6 @@ docker compose run --rm py -m interfaces.test
 docker compose run --rm py -m interpreter.test
 ```
 
-Module paths use dots instead of slashes and omit `.py`.
-
-These commands execute the module's top-level code. If a module only defines
-functions, those functions must be called before anything will print.
-
-To explicitly call a test function:
-
-```bash
-docker compose run --rm py -c "from device.test import run; run()"
-```
-
 ## Python Dependencies
 
 Add required third-party libraries to:

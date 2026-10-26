@@ -8,7 +8,8 @@ from interpreter.test import run as test_interpreter
 # This is used for testing library imports
 from loguru import logger # type: ignore
 
-from interpreter.llm_api import LLM_API
+from interpreter.llm_api import LLMApi
+from database.supa_db_handler import SupaDatabaseHandler
 
 test_device()
 test_device()
@@ -20,7 +21,13 @@ logger.debug("That's it, beautiful and simple logging!")
 # Example code that uses llama and allows you to insert query in terminal
 ai_model = "llama-3.1-8b-instruct"
 system_prompt = "You are a helpful assistant."
-ai = LLM_API(ai_model)
+ai = LLMApi(ai_model)
 query = input("Insert query to ai:\n")
 response = ai.prompt(query, system_prompt)
 print(response)
+
+
+# Testing the database handler
+db = SupaDatabaseHandler()
+result = db.query("SELECT current_database(), current_user, now()")
+print(result)

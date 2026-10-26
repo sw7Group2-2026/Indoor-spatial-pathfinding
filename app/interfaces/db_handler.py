@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-class DB_Handler(ABC):
+class DatabaseHandler(ABC):
+
     @abstractmethod
-    def query(self):
+    def query(self, sql: str):
         pass

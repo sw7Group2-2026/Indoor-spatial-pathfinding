@@ -2,7 +2,7 @@ import requests
 import os
 from dotenv import load_dotenv
 
-class LLM_API:
+class LLMApi:
     def __init__(self, ai_model):
         load_dotenv()
         ACCOUNT_ID = os.getenv('ACCOUNT_ID')

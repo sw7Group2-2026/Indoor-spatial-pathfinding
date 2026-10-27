@@ -9,8 +9,8 @@ class LLMApi:
         self.API_AUTH_TOKEN = os.getenv('API_AUTH_TOKEN')
         self.cloudflare_workers_api_url = (
             f"https://api.cloudflare.com/client/v4/accounts/"
-            f"{ACCOUNT_ID}/ai/run/@cf/meta/{ai_model}"
-    )
+            f"{ACCOUNT_ID}/ai/run/{ai_model}"
+        )
 
     def prompt(self, prompt, system_setup_prompt):
         response = requests.post(
@@ -19,6 +19,8 @@ class LLMApi:
                 "Authorization": f"Bearer {self.API_AUTH_TOKEN}"
             },
             json={
+                "max_tokens": 2048,
+                "temperature": 0,
                 "messages": [
                     {
                         "role": "system",
@@ -33,4 +35,7 @@ class LLMApi:
         )
 
         response_json = response.json()
-        return response_json["result"]["response"]
+
+        result = response_json.get("result", response_json)
+
+        return result["choices"][0]["message"]["content"]

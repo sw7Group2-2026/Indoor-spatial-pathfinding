@@ -1,20 +1,10 @@
-from interpreter.llm_api import LLMApi
+from interpreter.glm4flash import GLM4Flash
 from database.supa_db_handler import SupaDatabaseHandler
-from pathlib import Path
 
-ai = LLMApi("@cf/zai-org/glm-4.7-flash")
+llm = GLM4Flash()
 db = SupaDatabaseHandler()
 
-prompt_path = (
-    Path(__file__).resolve().parent
-    / "interpreter"
-    / "system_prompt.txt"
-)
-
-with open(prompt_path, "r", encoding="utf-8") as file:
-    system_prompt = file.read()
-
 question = input("Ask about the building: ")
-sql = ai.prompt(question, system_prompt)
+sql = llm.prompt(question)
 dbResponse = db.query(sql)
 print(dbResponse)

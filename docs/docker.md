@@ -2,6 +2,12 @@
 
 [← Back to project README](../README.md)
 
+## Docker
+
+This project runs files in docker. This allows us to run python(or any other file with valid setup for it) without needing to have python downloaded on the computer and prevents us from needing to manually download dependencies (libraries) every time we add something new.
+
+Running this requires Docker Desktop, which you must have started before programming. Please download this before starting.
+
 ## Quick Docker Explanation
 
 Docker **images** are templates containing everything needed to run an application.

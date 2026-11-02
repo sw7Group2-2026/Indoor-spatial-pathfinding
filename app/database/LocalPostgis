@@ -1,0 +1,15 @@
+from abstractions.Databasehandler import DatabaseHandler 
+import psycopg
+
+class LocalPostgis(DatabaseHandler):
+    def __init__(self):
+        self.centerlineCorridors = "SELECT ogc_fid, St_approximatemedialaxis(geom) AS medial_axis FROM indoorspace WHERE space_type = 'corridor' or space_type = 'common_area';"
+        return
+
+    def findNearest(self, curentLocation, arg):
+        with psycopg.connect("dbname=test user=postgres") as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT * FROM test")
+                print(cur.fetchone())
+                conn.commit()
+        return 

@@ -6,7 +6,8 @@
 
 This project runs files in docker. This allows us to run python(or any other file with valid setup for it) without needing to have python downloaded on the computer and prevents us from needing to manually download dependencies (libraries) every time we add something new.
 
-Running this requires Docker Desktop, which you must have started before programming. Please download this before starting.
+Running this requires Docker Desktop, which you must have started before programming. Please download this before starting:
+[Docker Desktop Download Link](https://www.docker.com/products/docker-desktop/)
 
 ## Quick Docker Explanation
 

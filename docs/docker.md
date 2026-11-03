@@ -67,7 +67,7 @@ Other examples:
 
 ```bash
 docker compose run --rm py -m database.test
-docker compose run --rm py -m interfaces.test
+docker compose run --rm py -m abstractions.test
 docker compose run --rm py -m interpreter.test
 ```
 

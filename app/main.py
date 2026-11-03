@@ -9,7 +9,7 @@ from interpreter.test import run as test_interpreter
 from loguru import logger # type: ignore
 
 
-test_device()
+test_database()
 test_device()
 test_interfaces()
 test_interpreter()

@@ -10,7 +10,7 @@ This project uses Python and follows [PEP 8](https://peps.python.org/pep-0008/) 
 |---|---|---|
 | Classes | PascalCase (CapWords) | `UserManager` |
 | Files / Modules | snake_case | `user_manager.py` |
-| Packages | lowercase | `services` |
+| Packages / Folders | lowercase | `services` |
 | Functions / Methods | snake_case | `get_user_data()` |
 | Variables / Attributes | snake_case | `user_name` |
 | Constants | UPPER_SNAKE_CASE | `MAX_RETRIES` |

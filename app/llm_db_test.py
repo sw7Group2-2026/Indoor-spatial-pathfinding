@@ -6,5 +6,6 @@ db = SupaDatabaseHandler()
 
 question = input("Ask about the building: ")
 sql = llm.prompt(question)
+print(sql)
 dbResponse = db.query(sql)
 print(dbResponse)

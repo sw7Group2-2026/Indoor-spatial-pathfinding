@@ -4,16 +4,13 @@ import psycopg
 from dotenv import load_dotenv
 from psycopg.rows import dict_row
 
-from interfaces.db_handler import DatabaseHandler
+from abstractions.db_handler import DatabaseHandler
 
 
 class SupaDatabaseHandler(DatabaseHandler):
     def __init__(self):
         load_dotenv()
         self._connection_string = os.getenv("DATABASE_URL")
-
-        if not self._connection_string:
-            raise RuntimeError("DATABASE_URL is missing")
 
     def query(self, sql: str):
         # Pyscopg connect is what connects to db with connection string

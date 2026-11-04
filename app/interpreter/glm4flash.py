@@ -4,11 +4,11 @@ from pathlib import Path
 
 
 class GLM4Flash(CloudflareLLM):
-    _model = "@cf/zai-org/glm-4.7-flash"
+    model = "@cf/zai-org/glm-4.7-flash"
     
     def __init__(self):
         self.prompt_engineering = self._load_prompt_engineering()
-        super().__init__(self._model)
+        super().__init__(self.model)
 
     def _load_prompt_engineering(self):
         prompt_path = (

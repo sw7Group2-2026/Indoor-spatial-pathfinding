@@ -67,28 +67,10 @@ Other examples:
 
 ```bash
 docker compose run --rm py -m database.test
-<<<<<<< HEAD
-docker compose run --rm py -m interfaces.test
-docker compose run --rm py -m interpreter.test
-```
-
-Module paths use dots instead of slashes and omit `.py`.
-
-These commands execute the module's top-level code. If a module only defines
-functions, those functions must be called before anything will print.
-
-To explicitly call a test function:
-
-```bash
-docker compose run --rm py -c "from device.test import run; run()"
-```
-
-=======
 docker compose run --rm py -m abstractions.test
 docker compose run --rm py -m interpreter.test
 ```
 
->>>>>>> origin/main
 ## Python Dependencies
 
 Add required third-party libraries to:
@@ -144,8 +126,4 @@ Remove containers created by `docker compose up`:
 
 ```bash
 docker compose down
-<<<<<<< HEAD
 ```
-=======
-```
->>>>>>> origin/main

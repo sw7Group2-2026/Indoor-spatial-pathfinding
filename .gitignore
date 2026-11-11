@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 sb_cert.crt
+
+# Gradio gitignore
+.gradio/
+**/.gradio/

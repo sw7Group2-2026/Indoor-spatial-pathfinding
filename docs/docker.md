@@ -71,6 +71,12 @@ docker compose run --rm py -m abstractions.test
 docker compose run --rm py -m interpreter.test
 ```
 
+If you prefer using the normal path for running files inside packages. Then you need the path relative to app.
+
+```bash
+docker compose run --rm py device/test.py
+```
+
 ## Python Dependencies
 
 Add required third-party libraries to:

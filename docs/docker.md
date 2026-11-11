@@ -47,6 +47,12 @@ This runs `main.py`. The container exits when the program finishes.
 
 `--rm` removes the temporary container after it exits.
 
+> **Note:** You only need to build once, or whenever you make changes to `requirements.txt`. Otherwise, you can simply run:
+>
+> ```bash
+> docker compose run --rm py
+> ```
+
 ## Running Individual Python Files
 
 Run a file located inside `app/`:
@@ -105,25 +111,3 @@ Python file changes are available the next time you run a command, without
 rebuilding the image.
 
 Changes to `requirements.txt` or the Dockerfile require a rebuild.
-
-## Running with Compose Up
-
-Build and run the application's default command:
-
-```bash
-docker compose up --build
-```
-
-The container stops once `main.py` finishes. This is expected.
-
-Check service status, including stopped containers:
-
-```bash
-docker compose ps -a
-```
-
-Remove containers created by `docker compose up`:
-
-```bash
-docker compose down
-```

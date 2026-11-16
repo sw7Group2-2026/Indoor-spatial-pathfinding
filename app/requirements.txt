@@ -2,3 +2,4 @@ loguru
 psycopg[binary]
 python-dotenv
 requests
+gradio

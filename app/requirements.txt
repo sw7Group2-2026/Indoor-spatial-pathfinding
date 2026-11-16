@@ -3,3 +3,5 @@ psycopg[binary]
 python-dotenv
 requests
 gradio
+chromadb
+sentence-transformers

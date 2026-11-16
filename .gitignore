@@ -6,3 +6,6 @@ sb_cert.crt
 # Gradio gitignore
 .gradio/
 **/.gradio/
+
+# ChromaDB
+chroma_db/

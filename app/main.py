@@ -11,11 +11,5 @@ from loguru import logger # type: ignore
 # test_database()
 # test_device()
 # test_interfaces()
-# test_interpreter()
+test_interpreter()
 # logger.debug("That's it, beautiful and simple logging!")
-
-# Temporary example of how to use the supaDB handler
-sql = None
-db = SupaDatabaseHandler()
-dbResponse = db.query(sql)
-print(dbResponse)

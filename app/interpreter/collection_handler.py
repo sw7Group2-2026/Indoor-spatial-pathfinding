@@ -2,7 +2,7 @@ import chromadb
 from chromadb.utils import embedding_functions
 from database.supa_db_handler import SupaDatabaseHandler
 
-CHROMA_PATH = ("./app/interpreter/chroma_db")
+CHROMA_PATH = ("./interpreter/chroma_db")
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
 # Creates a new collection with sentence-transformer as the embedding function

@@ -1,0 +1,7 @@
+services:
+  py:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/usr/src/app

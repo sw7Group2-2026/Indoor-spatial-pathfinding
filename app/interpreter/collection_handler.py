@@ -3,7 +3,7 @@ from chromadb.utils import embedding_functions
 from database.supa_db_handler import SupaDatabaseHandler
 
 CHROMA_PATH = ("./interpreter/chroma_db")
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 # Creates a new collection with sentence-transformer as the embedding function
 def createCollection(collectionName):
@@ -62,6 +62,8 @@ def populateAttributes(collection):
 # Queries the vector database in the specified collection with the specified request
 def queryResponse(collection, request):
     response = collection.query(
-            query_texts=[request]
+            query_texts=[request],
+            include=["documents"],
+            n_results=5
         )
     return response

@@ -6,3 +6,4 @@ gradio
 chromadb
 sentence-transformers
 ollama
+Pydantic

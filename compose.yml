@@ -3,10 +3,14 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
+    working_dir: /usr/src/app
     volumes:
       - ./app:/usr/src/app
     env_file:
       - .env
+    ports:
+      - "127.0.0.1:8000:8000"
+    command: ["-m", "uvicorn", "api.api:app", "--host", "0.0.0.0", "--port", "8000"]
   frontend:
     build:
       context: ./frontend

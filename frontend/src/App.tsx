@@ -1,9 +1,44 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getMaps } from './api/maps'
+import type { Shape } from './api/maps'
 
-const floors = [0, 1, 2]
+const floors = [1, 2]
 
 export default function App() {
-  const [selectedFloor, setSelectedFloor] = useState(0)
+  // The first usestate is used to update which current floor is selected. Default value is 1 (floor 1)
+  // Second is used to define the map shapes used for leaflet. This has type Shape array and is empty to start
+  // Third usestate is used for storing errors from the map in case the data is all messed up
+  const [selectedFloor, setSelectedFloor] = useState(1)
+  const [shapes, setShapes] = useState<Shape[]>([])
+  const [mapError, setMapError] = useState('')
+
+  // Use effects run after the component (in this case app) first appear
+  // I.E this is when they people enter the website. 
+  // So immediatly on entry of website we attempt to query map data, we get it all once
+  // Since we'll need to switch anyways between floors. The empty brackets at the end of this
+  // Use effect means it won't trigger again (unless the page is reloaded)
+  useEffect(() => {
+    async function loadMapData(){
+      try {
+        // Simple asynch for getting mapdata from server
+        const mapData = await getMaps()
+        setShapes(mapData.shapes)
+      } catch (error){
+        setMapError(
+          // If it's an existing error type load the message along with it, otherwise
+          // just load a regular couldnt load maps message
+          error instanceof Error ? error.message : 'Could not load maps'
+        )
+      }
+    }
+    loadMapData()
+  }, []);
+
+// THis is setup function for leaflet, it's used to only select shapes from a specific floor
+// that way we can create map based on which floor we are on
+// const visibleShapes = shapes.filter(
+//   (shape) => shape.floor === selectedFloor
+// )
 
   return (
     <main className="mx-auto max-w-xl p-4">
@@ -23,6 +58,9 @@ export default function App() {
           ))}
         </div>
       </div>
+      
+      {/* Temp loading of mapdata untill we get it in properly */}
+      <p>{mapError || `Loaded ${shapes.length} shapes`}</p>
 
       <form className="mt-4" onSubmit={(event) => event.preventDefault()}>
         <label htmlFor="query" className="mb-2 block">

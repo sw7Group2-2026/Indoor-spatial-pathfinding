@@ -24,7 +24,13 @@ db = SupaDatabaseHandler()
 def get_maps():
 
     # THIS QUERY HAS TEMPORARILY BEEN OMITTED UNTILL FURTHER DISCUSSION WITH GROUP
-    rows = db.query()
+    rows = db.query("""
+        SELECT
+            floor_id AS floor,
+            ST_AsGeoJSON(geom)::json AS geometry
+        FROM indoor_space
+        WHERE geom IS NOT NULL
+    """)
 
     shapes = []
 

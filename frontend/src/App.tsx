@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getMaps } from './api/maps'
 import type { Shape } from './api/maps'
 import LeafletMap from './components/LeafletMap'
+import proj4 from 'proj4'
 
 const floors = [1, 2]
 
@@ -35,6 +36,11 @@ export default function App() {
     loadMapData()
   }, []);
 
+  const testCord = []
+  proj4.defs('EPSG25832', "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
+  proj4('WGS84','EPSG25832',[-122.305887, 58.9465872]);
+
+
 
   return (
     <main className="mx-auto max-w-xl p-4">
@@ -61,6 +67,10 @@ export default function App() {
       
       {/* Temp loading of mapdata untill we get it in properly */}
       <p>{mapError || `Loaded ${shapes.length} shapes`}</p>
+
+      <p>
+      {proj4('EPSG25832','WGS84',[722906.441889943,6172892.374647559])}
+      </p>
 
       <form className="mt-4" onSubmit={(event) => event.preventDefault()}>
         <label htmlFor="query" className="mb-2 block">

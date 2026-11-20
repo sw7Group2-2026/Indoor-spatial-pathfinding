@@ -1,8 +1,9 @@
 
 import { MapContainer, TileLayer, Polygon, Polyline } from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
-import type { Shape } from './api/maps'
+import type { Shape, Coordinate } from './api/maps'
 import { useEffect } from 'react'
+import proj4 from 'proj4'
 
 type LeafletMapProps = {
   shapes: Shape[]
@@ -14,27 +15,24 @@ export default function LeafletMap({
   selectedFloor,
 }: LeafletMapProps) {
 
-  // Only show shapes on the selected floor (isn't used rn untill we actually get the real cords)
-  const visibleShapes = shapes.filter(
-    (shape) => shape.floor === selectedFloor
+
+  proj4.defs(
+    'EPSG:25832',
+    '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs +type=crs'
   )
 
-  // Example coords from earlier thingy
-  // Leaflet had specific lat lng apparently i shoulda known mb
-  const boundsMultiple: LatLngExpression[][] = [
-    [
-      [55.6506, 12.5416],
-      [55.6506, 12.5417],
-      [55.6507, 12.5417],
-      [55.6507, 12.5416],
-    ],
-    [
-      [55.6508, 12.5418],
-      [55.6508, 12.5419],
-      [55.6509, 12.5419],
-      [55.6509, 12.5418],
-    ],
-  ]
+  const transformedShapes = shapes
+    .filter((shape) => shape.floor === selectedFloor)
+    .filter((shape) => Array.isArray(shape.polygon))
+    .map((shape) => ({
+      ...shape,
+      polygon: shape.polygon.map(([x, y]): Coordinate => {
+        const [lng, lat] = proj4('EPSG:25832', 'WGS84', [x, y])
+        return [lat, lng]
+      }),
+    }))
+    .filter((shape) => shape.polygon.length >= 3)
+
 
   const points: LatLngExpression[] = [
     [55.6509, 12.5415],
@@ -42,6 +40,7 @@ export default function LeafletMap({
     [55.6510, 12.5416],
     [55.6511, 12.5417],
   ]
+
 
 
   // Leaflet but for react
@@ -59,13 +58,13 @@ export default function LeafletMap({
         maxNativeZoom={19}
          maxZoom={22}
       />
-      {boundsMultiple.map((coordinates, index) => (
-        <Polygon
-          key={index}
-          positions={coordinates}
-          pathOptions={{ color: 'blue' }}
-        />
-      ))}
+        {transformedShapes.map((shape, index) => (
+          <Polygon
+            key={index}
+            positions={shape.polygon}
+            pathOptions={{ color: 'blue', weight: 1 }}
+          />
+        ))}
       <Polyline
         positions={points}
         pathOptions={{

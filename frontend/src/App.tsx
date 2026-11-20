@@ -68,10 +68,6 @@ export default function App() {
       {/* Temp loading of mapdata untill we get it in properly */}
       <p>{mapError || `Loaded ${shapes.length} shapes`}</p>
 
-      <p>
-      {proj4('EPSG25832','WGS84',[722906.441889943,6172892.374647559])}
-      </p>
-
       <form className="mt-4" onSubmit={(event) => event.preventDefault()}>
         <label htmlFor="query" className="mb-2 block">
           Where do you want to go?

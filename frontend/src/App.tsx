@@ -4,7 +4,7 @@ import type { Shape } from './api/maps'
 import LeafletMap from './components/LeafletMap'
 import proj4 from 'proj4'
 
-const floors = [1, 2]
+const floors = [2,1]
 
 export default function App() {
   // The first usestate is used to update which current floor is selected. Default value is 1 (floor 1)
@@ -36,7 +36,6 @@ export default function App() {
     loadMapData()
   }, []);
 
-  const testCord = []
   proj4.defs('EPSG25832', "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
   proj4('WGS84','EPSG25832',[-122.305887, 58.9465872]);
 
@@ -44,11 +43,13 @@ export default function App() {
 
   return (
     <main className="mx-auto max-w-xl p-4">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-gray-200">
-        <LeafletMap
-          shapes={shapes}
-          selectedFloor={selectedFloor}
-        />
+      <div className="relative h-[80dvh] overflow-hidden rounded-xl bg-gray-200">
+        <div className="relative z-0 h-full w-full">
+          <LeafletMap
+            shapes={shapes}
+            selectedFloor={selectedFloor}
+          />
+        </div>
 
         <div className="absolute bottom-3 right-3 grid gap-2">
           {floors.map((floor) => (

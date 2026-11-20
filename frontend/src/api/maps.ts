@@ -1,7 +1,7 @@
 export type Coordinate = [number, number]
 
 export interface Shape {
-  floor: number
+  floor: number  
   polygon: Coordinate[]
 }
 

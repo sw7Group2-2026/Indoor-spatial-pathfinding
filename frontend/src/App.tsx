@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getMaps } from './api/maps'
 import type { Shape } from './api/maps'
+import LeafletMap from './components/LeafletMap'
 
 const floors = [1, 2]
 
@@ -34,16 +35,15 @@ export default function App() {
     loadMapData()
   }, []);
 
-// THis is setup function for leaflet, it's used to only select shapes from a specific floor
-// that way we can create map based on which floor we are on
-// const visibleShapes = shapes.filter(
-//   (shape) => shape.floor === selectedFloor
-// )
 
   return (
     <main className="mx-auto max-w-xl p-4">
-      <div className="relative aspect-[4/3] rounded-xl bg-gray-200">
-        {/* Add the Leaflet map here. */}
+      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-gray-200">
+        <LeafletMap
+          shapes={shapes}
+          selectedFloor={selectedFloor}
+        />
+
         <div className="absolute bottom-3 right-3 grid gap-2">
           {floors.map((floor) => (
             <button

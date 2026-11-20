@@ -26,8 +26,8 @@ export default function LeafletMap({
     .filter((shape) => Array.isArray(shape.polygon))
     .map((shape) => ({
       ...shape,
-      polygon: shape.polygon.map(([x, y]): Coordinate => {
-        const [lng, lat] = proj4('EPSG:25832', 'WGS84', [x, y])
+      polygon: shape.polygon.map(([k, y]): Coordinate => {
+        const [lng, lat] = proj4('EPSG:25832', 'WGS84', [k, y])
         return [lat, lng]
       }),
     }))

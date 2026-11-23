@@ -101,7 +101,7 @@ class CollectionHandler:
     # Queries the vector database in the specified collection with the specified request
     def queryResponse(self, request):
         response = self.collection.query(
-                query_texts=[request],
+                query_texts=request,
                 include=["documents", "distances"],
                 n_results=5
             )

@@ -121,19 +121,9 @@ class Llama(CloudflareLLM):
                             "destination": {
                                 "type": ["string", "null"]
                             },
-                            "valid_match": {
-                                "type": "boolean"
-                            },
-                            "response": {
-                                "type": "string"
-                            }
+                            
                         },
-                        "required": [
-                            "destination",
-                            "valid_match",
-                            "response"
-                        ],
-                        "additionalProperties": False
+                        
                     }
                 }
             },

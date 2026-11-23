@@ -51,7 +51,7 @@ class CollectionHandler:
             db.query(
                 """
                 SELECT feature_type_id, name 
-                FROM feature_type;
+                FROM feature_type_e;
                 """
             )
         )
@@ -59,7 +59,7 @@ class CollectionHandler:
             db.query(
                 """
                 SELECT DISTINCT ON (room_description) indoor_space_id, room_description 
-                FROM indoor_space 
+                FROM indoor_space_e 
                 WHERE room_description IS NOT NULL;
                 """
             )
@@ -104,7 +104,7 @@ class CollectionHandler:
     def queryResponse(self, request):
         response = self.collection.query(
                 query_texts=[request],
-                include=["documents"],
+                include=["documents", "distances"],
                 n_results=5
             )
         return response

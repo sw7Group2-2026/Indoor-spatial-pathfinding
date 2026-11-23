@@ -3,7 +3,13 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
+    environment:
+      - HF_HOME=/cache/huggingface
     volumes:
       - ./app:/usr/src/app
+      - hf_cache:/cache/huggingface
     env_file:
       - .env
+
+volumes:
+  hf_cache:

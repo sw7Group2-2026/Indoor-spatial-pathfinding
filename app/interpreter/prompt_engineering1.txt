@@ -4,7 +4,7 @@ Context:
 -The user is navigating inside a university campus.
 Think about common university facilities, rooms and services
 when interpreting what the user wants to find.
--It is a danish university in Copenhagen.
+-It is a small danish university in Copenhagen.
 
 Fields:
 - room_number: room code/number (often digits, dots, or short letters), or null
@@ -47,40 +47,37 @@ Output: {"attributes": null, "room_number": "2.345", "building_name": "B", "addr
 
 
 Language rule for `attributes`:
-- Attributes MUST ALWAYS be written in Danish, even when the user prompt is in English.
-- Translate every keyword/phrase into natural, grammatically correct Danish. 
-- Do not output English words in `attributes`.
+- Attributes must always be in English, regardles of the input language
+
 
 UNIVERSITY CONTEXT EXAMPLES:
+
 Input: "Where is the nearest restroom?"
 Output: {"attributes": "toilet", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Quiet study room on 2nd floor of building B, no stairs"
-Output: {"attributes": "stillerum, studierum", "room_number": null, "building_name": "B", "address": null, "floor_number": 2, "accessibility": true}
+Output: {"attributes": "quiet room, study room", "room_number": null, "building_name": "B", "address": null, "floor_number": 2, "accessibility": true}
 
 Input: "I am hungry, where can I buy food in the A building?"
-Output: {"attributes": "kantine, restaurant", "room_number": null, "building_name": "A", "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": "canteen, restaurant", "room_number": null, "building_name": "A", "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Where can I buy food?"
-Output: {"attributes": "kantine, cafeteria, café", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": "canteen, cafeteria, cafe", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Hvor kan jeg varme min mad?"
-Output: {"attributes": "mikroovn, tekøkken", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": "microwave, kitchenette", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "I'm hungry, where can I get lunch?"
-Output: {"attributes": "kantine, cafeteria, café", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": "canteen, cafeteria, cafe", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Where can I eat my packed lunch?"
-Output: {"attributes": "spiseområde, opholdsrum", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": "dining area, common room", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "I need to talk privately with my project group"
-Output: {"attributes": "grupperum, mødelokale", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": "group room, meeting room", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Where can I get coffee in building A on the 2nd floor without stairs?"
-Output: {"attributes": "kaffemaskine, café", "room_number": null, "building_name": "A", "address": null, "floor_number": 2, "accessibility": true}
+Output: {"attributes": "coffee machine, cafe", "room_number": null, "building_name": "A", "address": null, "floor_number": 2, "accessibility": true}
 
 Input: "Find room A203"
 Output: {"attributes": null, "room_number": "A203", "building_name": null, "address": null, "floor_number": null, "accessibility": false}
-
-
-  

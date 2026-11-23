@@ -5,5 +5,4 @@ requests
 gradio
 chromadb
 sentence-transformers
-ollama
 pydantic

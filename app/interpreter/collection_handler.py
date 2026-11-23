@@ -14,12 +14,10 @@ class CollectionHandler:
     def __init__(
         self,
         collection_name,
-        chroma_path: str = CHROMA_PATH,
         embedding_model: str = EMBEDDING_MODEL,
         batch_size: int = 100
     ):
         self.collection_name = collection_name
-        self.chroma_path = Path(chroma_path)
         self.embedding_model = embedding_model
         self.batch_size = batch_size
 

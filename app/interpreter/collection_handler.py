@@ -14,12 +14,10 @@ class CollectionHandler:
     def __init__(
         self,
         collection_name,
-        chroma_path: str = CHROMA_PATH,
         embedding_model: str = EMBEDDING_MODEL,
         batch_size: int = 100
     ):
         self.collection_name = collection_name
-        self.chroma_path = Path(chroma_path)
         self.embedding_model = embedding_model
         self.batch_size = batch_size
 
@@ -51,7 +49,7 @@ class CollectionHandler:
             db.query(
                 """
                 SELECT feature_type_id, name 
-                FROM feature_type;
+                FROM feature_type_e;
                 """
             )
         )
@@ -59,7 +57,7 @@ class CollectionHandler:
             db.query(
                 """
                 SELECT DISTINCT ON (room_description) indoor_space_id, room_description 
-                FROM indoor_space 
+                FROM indoor_space_e 
                 WHERE room_description IS NOT NULL;
                 """
             )
@@ -104,7 +102,7 @@ class CollectionHandler:
     def queryResponse(self, request):
         response = self.collection.query(
                 query_texts=[request],
-                include=["documents"],
+                include=["documents", "distances"],
                 n_results=5
             )
         return response

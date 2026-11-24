@@ -17,8 +17,8 @@ class CollectionHandler:
     def __init__(
         self,
         collection_name,
-        embedding_model: str = EMBEDDING_MODEL,
-        batch_size: int = 100
+        embedding_model = EMBEDDING_MODEL,
+        batch_size = 100
     ):
         self.collection_name = collection_name
         self.embedding_model = embedding_model
@@ -29,7 +29,7 @@ class CollectionHandler:
         #Connect to ChromaDB
         self.client = chromadb.PersistentClient(path=CHROMA_PATH)
 
-        #Load the embedding model
+        #Load the embedding function
         self.embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
             model_name=self.embedding_model
         )
@@ -42,9 +42,6 @@ class CollectionHandler:
 
     def deleteCollection(self):
         self.client.delete_collection(name=self.collection_name)
-
-    def printCollection(collectionName):
-        pass
 
     # Populate collection with relevant attributes from PostGIS
     def populateAttributes(self):
@@ -89,7 +86,7 @@ class CollectionHandler:
                 "metadata": {"type": "room description"}
             })
         
-        #Split attributes into smaller groups(batch), before added to ChromaDB
+        #Split attributes into batches before adding to ChromaDB
         for i in range(0, len(attributes), BATCH_SIZE):
             batch = attributes[i : i + BATCH_SIZE]
             self.collection.upsert(
@@ -98,7 +95,6 @@ class CollectionHandler:
                 metadatas=[item["metadata"] for item in batch],
             )
 
-        # Upsert (insert or update) these attributes in the collection
         if attributes:
             print(f"Successfully updated {len(attributes)} items in ChromaDB.")
         else:
@@ -106,7 +102,8 @@ class CollectionHandler:
 
         return attributes
 
-    # Queries the vector database in the specified collection with the specified request
+    # Queries the vector database with the specified list of keywords
+    # Returns the the top 5 closest matches for each keyword
     def queryResponse(self, request):
         response = self.collection.query(
                 query_texts=request,

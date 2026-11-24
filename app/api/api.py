@@ -36,7 +36,7 @@ class RouteRequestBody(BaseModel):
 db = SupaDatabaseHandler()
 
 @app.post("/api/route", response_model=RouteResponse)
-def post_route(request: RouteRequest) -> RouteResponse:
+def post_route(request: RouteRequestBody) -> RouteResponse:
     # BUILD THE ROUTE IN HERE SO HERE IS THE SQL FOR GETTING THE ROUTE
     # ALSO THE CODE FOR QUERYING LLM
     return RouteResponse(route=route)

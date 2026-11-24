@@ -5,8 +5,11 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 
+#The path to ChromaDB
 CURRENT_PATH = Path(__file__).resolve().parent
 CHROMA_PATH = str(CURRENT_PATH / "chroma_db")
+
+#Embedding model which is used to convert text to vectors
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 BATCH_SIZE = 100
 
@@ -23,11 +26,15 @@ class CollectionHandler:
 
         load_dotenv()
 
+        #Connect to ChromaDB
         self.client = chromadb.PersistentClient(path=CHROMA_PATH)
 
+        #Load the embedding model
         self.embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
             model_name=self.embedding_model
         )
+
+        #Getting either existing collection or create a new one
         self.collection = self.client.get_or_create_collection(
             name=self.collection_name,
             embedding_function=self.embedding_fn,
@@ -81,7 +88,8 @@ class CollectionHandler:
                 "document": description['room_description'],
                 "metadata": {"type": "room description"}
             })
-
+        
+        #Split attributes into smaller groups(batch), before added to ChromaDB
         for i in range(0, len(attributes), BATCH_SIZE):
             batch = attributes[i : i + BATCH_SIZE]
             self.collection.upsert(

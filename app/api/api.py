@@ -27,10 +27,19 @@ class PointOnRoute(BaseModel):
 class RouteResponse(BaseModel):
     route: list[PointOnRoute]
 
+class RouteRequestBody(BaseModel):
+    query: str
+    startLocation: PointOnRoute
+
 
 
 db = SupaDatabaseHandler()
 
+@app.post("/api/route", response_model=RouteResponse)
+def post_route(request: RouteRequest) -> RouteResponse:
+    # BUILD THE ROUTE IN HERE SO HERE IS THE SQL FOR GETTING THE ROUTE
+    # ALSO THE CODE FOR QUERYING LLM
+    return RouteResponse(route=route)
 
 @app.get("/api/maps", response_model=MapResponse)
 def get_maps():

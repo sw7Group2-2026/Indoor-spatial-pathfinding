@@ -1,10 +1,26 @@
 import { useEffect, useState } from 'react'
-import { getMaps } from './api/maps'
+import { getMaps, getRoute } from './api/maps'
 import type { Shape } from './api/maps'
 import LeafletMap from './components/LeafletMap'
 import proj4 from 'proj4'
+import QueryField from './components/QueryField'
+import type { PointOnRoute } from '../types'
 
 const floors = [2,1]
+
+
+// This data below for points is simply for testing to have some base values
+const startLocation: PointOnRoute = {
+  floor: 1,
+  point: [500000, 6200000],
+}
+
+const exampleRoute: PointOnRoute[] = [
+  startLocation,
+  { floor: 1, point: [500008, 6200000] },
+  { floor: 2, point: [500008, 6200000] },
+  { floor: 2, point: [500016, 6200004] },
+]
 
 export default function App() {
   // The first usestate is used to update which current floor is selected. Default value is 1 (floor 1)
@@ -13,6 +29,7 @@ export default function App() {
   const [selectedFloor, setSelectedFloor] = useState(1)
   const [shapes, setShapes] = useState<Shape[]>([])
   const [mapError, setMapError] = useState('')
+  const [route, setRoute] = useState<PointOnRoute[]>([])
 
   // Use effects run after the component (in this case app) first appear
   // I.E this is when they people enter the website. 
@@ -68,24 +85,14 @@ export default function App() {
       
       {/* Temp loading of mapdata untill we get it in properly */}
       <p>{mapError || `Loaded ${shapes.length} shapes`}</p>
-
-      <form className="mt-4" onSubmit={(event) => event.preventDefault()}>
-        <label htmlFor="query" className="mb-2 block">
-          Where do you want to go?
-        </label>
-
-        <div className="flex gap-2">
-          <input
-            id="query"
-            name="query"
-            placeholder="Where’s the nearest toilet?"
-            className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3"
-          />
-          <button type="submit" className="min-h-11 rounded-lg bg-gray-900 px-3 text-white">
-            Find route
-          </button>
-        </div>
-      </form>
+      <QueryField
+        startLocation={startLocation}
+          onFindRoute={(query, start) => {
+            console.log({ query, start })
+            setRoute(exampleRoute)
+          }}
+      />
+      <p>Route points loaded: {route.length}</p>
     </main>
   )
 }

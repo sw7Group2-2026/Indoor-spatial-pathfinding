@@ -1,4 +1,4 @@
-import type { MapResponse, RouteResponse } from '../../types'
+import type { MapResponse, PointOnRoute, RouteResponse } from '../../types'
 
 
 export async function getMaps(): Promise<MapResponse> {
@@ -15,16 +15,22 @@ export async function getMaps(): Promise<MapResponse> {
   return data
 }
 
-export async function getRoute(): Promise<RouteResponse> {
-  const response = await fetch('/api/maps')
+export async function getRoute(
+  query: string,
+  startLocation: PointOnRoute,
+): Promise<RouteResponse> {
+  const response = await fetch('/api/route', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query,
+      start_location: startLocation,
+    }),
+  })
 
   if (!response.ok) {
-    throw new Error(`Could not load maps (${response.status})`)
+    throw new Error(`Route request failed (${response.status})`)
   }
 
-  const data: RouteResponse = await response.json()
-  // Uncomment to see the shapes when opening up the terminal in browser
-  // console.log(JSON.stringify(data, null, 2))
-
-  return data
+  return response.json()
 }

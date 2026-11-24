@@ -1,7 +1,7 @@
 
 import { MapContainer, TileLayer, Polygon, Polyline } from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
-import type { Shape, Coordinate } from './api/maps'
+import type { Shape, Coordinate } from '../../types'
 import { useEffect } from 'react'
 import proj4 from 'proj4'
 
@@ -22,12 +22,12 @@ export default function LeafletMap({
   )
 
   const transformedShapes = shapes
-    .filter((shape) => shape.floor === selectedFloor)
+    .filter((shape) => shape.kind === 'transition' || shape.floor === selectedFloor)
     .filter((shape) => Array.isArray(shape.polygon))
     .map((shape) => ({
       ...shape,
-      polygon: shape.polygon.map(([k, y]): Coordinate => {
-        const [lng, lat] = proj4('EPSG:25832', 'WGS84', [k, y])
+      polygon: shape.polygon.map(([x, y]): Coordinate => {
+        const [lng, lat] = proj4('EPSG:25832', 'WGS84', [x, y])
         return [lat, lng]
       }),
     }))

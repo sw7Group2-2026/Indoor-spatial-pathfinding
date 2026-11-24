@@ -9,18 +9,13 @@ from database.supa_db_handler import SupaDatabaseHandler
 CURRENT_PATH = Path(__file__).resolve().parent
 CHROMA_PATH = str(CURRENT_PATH / "chroma_db")
 
-# Embedding model which is used to convert text to vectors
-EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-
-BATCH_SIZE = 100
-
 
 class CollectionHandler:
     def __init__(
         self,
         collection_name,
-        embedding_model: str = EMBEDDING_MODEL,
-        batch_size: int = 100
+        embedding_model,
+        batch_size
     ):
         self.collection_name = collection_name
         self.embedding_model = embedding_model
@@ -36,7 +31,7 @@ class CollectionHandler:
             model_name=self.embedding_model
         )
 
-        # Getting either existing collection or create a new one
+        # Get the existing collection or create a new one
         self.collection = self.client.get_or_create_collection(
             name=self.collection_name,
             embedding_function=self.embedding_fn,
@@ -44,9 +39,6 @@ class CollectionHandler:
 
     def delete_collection(self):
         self.client.delete_collection(name=self.collection_name)
-
-    def print_collection(collection_name):
-        pass
 
     # Populate collection with relevant attributes from PostGIS
     def populate_attributes(self):
@@ -92,8 +84,8 @@ class CollectionHandler:
             })
         
         # Split attributes into smaller groups(batch), before added to ChromaDB
-        for i in range(0, len(attributes), BATCH_SIZE):
-            batch = attributes[i : i + BATCH_SIZE]
+        for i in range(0, len(attributes), self.batch_size):
+            batch = attributes[i : i + self.batch_size]
             self.collection.upsert(
                 ids=[item["id"] for item in batch],
                 documents=[item["document"] for item in batch],
@@ -112,7 +104,7 @@ class CollectionHandler:
     def query_response(self, request):
         response = self.collection.query(
                 query_texts=request,
-                include=["documents", "distances"],
+                include=["documents", "distances", "metadatas"],
                 n_results=5
             )
         return response

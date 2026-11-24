@@ -12,7 +12,7 @@ class Llama(CloudflareLLM):
     def __init__(self):
             super().__init__(self.model)
 
-    # Loading the prompt-instructions 
+    # Loading the prompt instructions 
     def _load_prompt_engineering(self, prompt_file):
         prompt_path = (
             Path(__file__).resolve().parent.parent
@@ -21,11 +21,11 @@ class Llama(CloudflareLLM):
         with open(prompt_path, "r", encoding="utf-8") as file:
             return file.read()
 
-    # The user input is sent to Llama with the prompt-instructions and JSON
+    # The user input is sent to Llama with the prompt instructions and JSON
     def prompt(self, prompt, prompt_engineering, response_format):
         system_prompt = self._load_prompt_engineering(prompt_engineering)
         
-        # The request is sent to Coudflare API
+        # The request is sent to Cloudflare API
         response = requests.post(
             f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run/{self.model}",
             headers={
@@ -45,7 +45,7 @@ class Llama(CloudflareLLM):
                         "content": prompt
                     }
                 ],
-                # This make Llama response in the given JSON formate
+                # This enforces response in the given JSON format
                 "response_format": {
                     "type": "json_schema",
                     "json_schema": response_format,
@@ -54,10 +54,10 @@ class Llama(CloudflareLLM):
             timeout=60
         )
 
-        # Converting the respons to JSON
+        # Converting the response to JSON
         response_json = response.json()
 
-        # Chrcking if Cloudflare return an error
+        # Checking if Cloudflare return an error
         if not response_json.get("success", False):
                     raise RuntimeError(f"Cloudflare API error: {response_json}")
 

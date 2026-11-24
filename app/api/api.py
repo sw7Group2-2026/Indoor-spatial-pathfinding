@@ -39,9 +39,16 @@ db = SupaDatabaseHandler()
 def post_route(request: RouteRequestBody) -> RouteResponse:
     # BUILD THE ROUTE IN HERE SO HERE IS THE SQL FOR GETTING THE ROUTE
     # ALSO THE CODE FOR QUERYING LLM
-    
     # request.query
     # request.startLocation
+
+    # STRUCTURE FOR THE WHOLE ENTIRE PROCESS
+    # First save query and startlocation in variables
+    # Pass query to the LLM sandwich and get a structured output object
+    # Pass the sandwich output into the filtration algorithm for Start location and Targets (destinations)
+    # Save those start location and targets in variables
+    # Pass the start location and target SQL variable queries into the routing query
+    # Return the route from the routing query to be displayed in the frontend
     
 
 

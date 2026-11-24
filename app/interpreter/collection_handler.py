@@ -1,17 +1,19 @@
+from pathlib import Path
 import chromadb
 from chromadb.utils import embedding_functions
-from database.supa_db_handler import SupaDatabaseHandler
 from dotenv import load_dotenv
-from pathlib import Path
-import os
+from database.supa_db_handler import SupaDatabaseHandler
 
-#The path to ChromaDB
+
+# The path to ChromaDB
 CURRENT_PATH = Path(__file__).resolve().parent
 CHROMA_PATH = str(CURRENT_PATH / "chroma_db")
 
-#Embedding model which is used to convert text to vectors
+# Embedding model which is used to convert text to vectors
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
 BATCH_SIZE = 100
+
 
 class CollectionHandler:
     def __init__(
@@ -26,28 +28,28 @@ class CollectionHandler:
 
         load_dotenv()
 
-        #Connect to ChromaDB
+        # Connect to ChromaDB
         self.client = chromadb.PersistentClient(path=CHROMA_PATH)
 
-        #Load the embedding model
+        # Load the embedding model
         self.embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
             model_name=self.embedding_model
         )
 
-        #Getting either existing collection or create a new one
+        # Getting either existing collection or create a new one
         self.collection = self.client.get_or_create_collection(
             name=self.collection_name,
             embedding_function=self.embedding_fn,
         )
 
-    def deleteCollection(self):
+    def delete_collection(self):
         self.client.delete_collection(name=self.collection_name)
 
-    def printCollection(collectionName):
+    def print_collection(collection_name):
         pass
 
     # Populate collection with relevant attributes from PostGIS
-    def populateAttributes(self):
+    def populate_attributes(self):
         # Create Supabase database handler object
         db = SupaDatabaseHandler()
 
@@ -89,7 +91,7 @@ class CollectionHandler:
                 "metadata": {"type": "room description"}
             })
         
-        #Split attributes into smaller groups(batch), before added to ChromaDB
+        # Split attributes into smaller groups(batch), before added to ChromaDB
         for i in range(0, len(attributes), BATCH_SIZE):
             batch = attributes[i : i + BATCH_SIZE]
             self.collection.upsert(
@@ -107,7 +109,7 @@ class CollectionHandler:
         return attributes
 
     # Queries the vector database in the specified collection with the specified request
-    def queryResponse(self, request):
+    def query_response(self, request):
         response = self.collection.query(
                 query_texts=request,
                 include=["documents", "distances"],

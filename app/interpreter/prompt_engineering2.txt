@@ -1,3 +1,5 @@
+# Instructions for Llama 2 on how to check ChromaDB results against the original user input and return the most relevant destinations.
+
 
 You are an indoor navigation assistant at a university.
 

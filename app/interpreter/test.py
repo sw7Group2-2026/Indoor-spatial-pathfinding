@@ -2,10 +2,14 @@ from interpreter.collection_handler import CollectionHandler
 from interpreter.models.llama import Llama
 from interpreter.user_query import UserQuery
 
+#Name of the Collection and prompt files used for the LLM Sandwich
 COLLECTION_NAME = "Attributes"
 PROMPT_ENGINEERING_INPUT = "prompt_engineering1.txt"
 RESPONSE_FORMAT_INPUT = UserQuery.getJson()
 PROMPT_ENGINEERING_VALIDATION = "prompt_engineering2.txt"
+
+
+#JSON format for the second LLM answer
 RESPONSE_FORMAT_VALIDATION = {
     "type": "object",
     "properties": {
@@ -28,14 +32,14 @@ def run():
     llamaLLM = Llama()
     userInput = input("Ask about the building: ")
 
-    # Generate a structured output extracted from the user input
+    # Llama 1. Generate a structured output extracted from the user input
     jsonResponse = llamaLLM.prompt(
         userInput, 
         PROMPT_ENGINEERING_INPUT, 
         RESPONSE_FORMAT_INPUT
     )
 
-    # Debug: Print the structured output
+    # Debug: Print the structured output for testing (JSON)
     print("\nTest json response:")
     print(jsonResponse)
 
@@ -49,10 +53,10 @@ def run():
             if word.strip()
         ]
 
-        # Search for each attribute separately in the collection
+        # Search for each attribute separately in ChromaDB
         response = collection.queryResponse(attributes)
 
-        # Printing response + distances for debugging
+        # Printing response + distances for testing
         print("\nRequest:", userInput)
         print("Response:")
 
@@ -66,13 +70,15 @@ def run():
             for document, distance in zip(documents, distances):
                 print(f"{document}: {distance:.4f}")
 
-        # Extract documents from response as string
+        # Put all ChromaDB results into one list
         response_docs = [doc for docs in response["documents"] for doc in docs]
         print("Response docs:")
         print(response_docs)
+
+        #Combine the original question and ChromaDB results for Llama2
         prompt = f'''User: {userInput}, Results:{", ".join(response_docs)}'''
 
-        # Verify response by returning only documents which clearly match the user's input
+        # Llama 2. Check which results actually match the user's question
         verified_response = llamaLLM.prompt(
             prompt,
             PROMPT_ENGINEERING_VALIDATION,

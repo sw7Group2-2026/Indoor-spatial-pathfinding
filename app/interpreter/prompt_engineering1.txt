@@ -1,3 +1,5 @@
+# Instructions for Llama 1 on how to understand the user input and extract relevant information into the JSON format.
+
 Respond strictly according to the JSON schema.
 
 Context:

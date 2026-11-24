@@ -39,6 +39,12 @@ db = SupaDatabaseHandler()
 def post_route(request: RouteRequestBody) -> RouteResponse:
     # BUILD THE ROUTE IN HERE SO HERE IS THE SQL FOR GETTING THE ROUTE
     # ALSO THE CODE FOR QUERYING LLM
+    
+    # request.query
+    # request.startLocation
+    
+
+
     return RouteResponse(route=route)
 
 @app.get("/api/maps", response_model=MapResponse)

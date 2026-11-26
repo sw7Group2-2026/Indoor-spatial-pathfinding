@@ -30,7 +30,7 @@ class RouteResponse(BaseModel):
 
 class RouteRequestBody(BaseModel):
     query: str
-    startLocation: PointOnRoute
+    start_location: PointOnRoute
 
 
 
@@ -48,19 +48,28 @@ def post_route(request: RouteRequestBody) -> RouteResponse:
     # Pass the start location and target SQL variable queries into the routing query
     # Return the route from the routing query to be displayed in the frontend
     
+    print(request.query)
 
     queryString = request.query
-    startLocation = request.startLocation
-    queryHandler = InputInterpreter()
-    queryResult = queryHandler.query(queryString)
+    startLocation = request.start_location
 
-    startLocationSQL = getStartLocation(startLocation)
-    targetSQL = getDestinations(queryResult)
+    print("Query:", queryString)
+    print("Start location:", startLocation)
+
+    queryHandler = InputInterpreter(debug = True)
+    queryResult = queryHandler.query(queryString)
+    print("QUERY RESULT OBJECT: ", queryResult)
+
+
+    # startLocationSQL = getStartLocation(startLocation)
+    # targetSQL = getDestinations(queryResult)
 
     # 4. Build the complete routing SQL
-    routingSQL = getRoutingSQL(startLocationSQL, targetSQL)
+    # Also maybe change the way database is fetched to ensure its parametrised
+    # Server side queries vs client side asking server has varying levels of risk in terms of SQL injection
+    # routingSQL = getRoutingSQL(startLocationSQL, targetSQL)
 
-    return RouteResponse(route=route)
+    return RouteResponse(route=[startLocation])
 
 @app.get("/api/maps", response_model=MapResponse)
 def get_maps():

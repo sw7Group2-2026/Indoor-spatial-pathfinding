@@ -95,7 +95,7 @@ class InputInterpreter:
     # from the PostGIS database, referred to collectively as 'attributes'.
     def _chromaDB(self, attributes):
         # Search separately in the collection for each given attribute
-        response = self.collection.queryResponse(attributes)
+        response = self.collection.query_response(attributes)
 
         if self.debug:
             # TODO: Remove the TESTING print

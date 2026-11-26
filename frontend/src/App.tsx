@@ -53,6 +53,15 @@ export default function App() {
     loadMapData()
   }, []);
 
+  async function onFindRoute(query: string, start: PointOnRoute) {
+    try {
+      const { route } = await getRoute(query, start)
+      setRoute(route)
+    } catch (error) {
+      console.error('Could not load route', error)
+    }
+  }
+
   proj4.defs('EPSG25832', "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
   proj4('WGS84','EPSG25832',[-122.305887, 58.9465872]);
 
@@ -87,10 +96,7 @@ export default function App() {
       <p>{mapError || `Loaded ${shapes.length} shapes`}</p>
       <QueryField
         startLocation={startLocation}
-          onFindRoute={(query, start) => {
-            console.log({ query, start })
-            setRoute(exampleRoute)
-          }}
+        onFindRoute={onFindRoute}
       />
       <p>Route points loaded: {route.length}</p>
     </main>

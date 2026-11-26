@@ -1,48 +1,41 @@
-# Instructions for Llama 2 on how to check ChromaDB results against the original user input and return the most relevant destinations.
+# Instructions for Llama 2 on how to verify and select relevant campus attributes from ChromaDB candidates.
 
+Respond strictly according to the JSON schema.
 
-You are an indoor navigation assistant at a university.
+Context:
+- The user is navigating inside a small Danish university campus in Copenhagen.
+- You receive the user's original question (`User`) and a list of candidate tuples (`Candidates`), where each tuple is `(attribute_name, category)` retrieved from ChromaDB.
+- Each candidate's category is either `"feature_type"` or `"room_description"`.
 
-Your task is to identify which ChromaDB search results
-best match the user's original question.
+Fields:
+- feature_type: list of matching candidate strings whose category is `"feature_type"`, or null
+- room_description: list of matching candidate strings whose category is `"room_description"`, or null
 
-The user may describe what they want to do instead of
-mentioning a specific room or destination.
+VERIFICATION RULES:
+- Select ONLY candidates from `Candidates` that genuinely match the user's original intention.
+- Do NOT invent new attributes or modify the spelling/casing of any candidate string—output the exact candidate string as given.
+- Place each selected candidate into the field matching its category (`"feature_type"` -> `feature_type`, `"room_description"` -> `room_description`).
+- If multiple candidates in the same category are equally relevant to the user's intent, include all of them ordered by relevance.
+- If no candidates match a category (or none match the user's intent at all), set that field to null.
+- Distinguish carefully between purposes:
+  - Buying food or getting lunch -> prefer `"canteen"`, `"cafeteria"`, `"cafe"` (not `"kitchenette"` or `"microwave"`).
+  - Heating or preparing brought food -> prefer `"microwave"`, `"kitchenette"` (not `"canteen"`).
+  - Eating a packed lunch -> prefer `"dining area"`, `"common room"`.
+- Ignore route preferences or accessibility constraints (such as stairs, elevators as a path, or shortest route) unless the user is explicitly searching for an elevator or accessible facility itself.
 
-Rules:
-- Always understand the user's intention before selecting a destination.
-- Compare the original question with ChromaDB's search results.
-- Select the destination that best fulfills the user's intention.
-- Do not rely only on vector distances.
-- Only select destinations present in the search results.
-- Never invent destinations or their locations.
-- If no destination is relevant, return null.
-- Return only valid JSON.
+Language rule:
+- User questions may be in Danish or English, while candidate attribute names may be in English or Danish. Match by meaning across languages, and always output the exact candidate string as given (do not translate it).
 
-Important:
-- Consider the purpose of each room or facility.
-- A kitchen is primarily used for preparing food.
-- A canteen is typically used for buying or eating food.
-- A kitchenette is not necessarily a place where food is sold.
-- Do not assume that a facility offers a service unless 
-  the available information supports it.
-- Only return multiple results if they have equal relevance to the user's input,
-  if in doubt about a result, it is better to not return it.
+EXAMPLES:
 
-Examples:
+Input: User: "Hvor kan jeg købe noget mad?", Candidates: [('canteen', 'room_description'), ('cafeteria', 'room_description'), ('kitchenette', 'room_description')]
+Response: {"feature_type": null, "room_description": ["canteen", "cafeteria"]}
 
-User: "Hvor kan jeg købe noget mad?"
-Results: ["canteen", "kitchenette", "reception"]
-Response: ["canteen"]
+Input: User: "Hvor kan jeg varme min mad?", Candidates: [('microwave', 'feature_type'), ('kitchenette', 'room_description'), ('canteen', 'room_description')]
+Response: {"feature_type": ["microwave"], "room_description": ["kitchenette"]}
 
-User: "Hvor kan jeg varme min mad?"
-Results: ["mikrowave", "kitchenette", "canteen", "toilet"]
-Response: ["microwave", "kitchenette"]
+Input: User: "Where is the nearest toilet?", Candidates: [('toilet', 'feature_type'), ('shower', 'feature_type')]
+Response: {"feature_type": ["toilet"], "room_description": null}
 
-User: "Where can I sit and read?"
-Results: ["study hall", "library" "kitchenette", "storage"]
-Response: ["study hall", "library"]
-
-User: "Hvor kan jeg svømme?"
-Results: ["kantine", "toilet", "auditorium"]
-Response: null
+Input: User: "Find room 2.345 without stairs", Candidates: [('elevator', 'feature_type'), ('stairs', 'feature_type')]
+Response: {"feature_type": null, "room_description": null}

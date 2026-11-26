@@ -3,83 +3,69 @@
 Respond strictly according to the JSON schema.
 
 Context:
--The user is navigating inside a university campus.
-Think about common university facilities, rooms and services
-when interpreting what the user wants to find.
--It is a small danish university in Copenhagen.
+- The user is navigating inside a university campus.
+  Think about common university facilities, rooms, and services when interpreting what the user wants to find.
+- It is a small Danish university in Copenhagen.
 
 Fields:
 - room_number: room code/number (often digits, dots, or short letters), or null
-- building_name: A, B, C etc. or null
+- building_name: A, B, C etc., or null
 - address: street/location address, or null
 - floor_number: single integer floor, or null
 - accessibility: true if elevators are required / stairs avoided, otherwise false
-- attributes: comma-separated string of descriptive keywords not already in the other fields (no duplicates), or null
+- attributes: list of strings of descriptive keywords not already in the other fields (no duplicates), or null
 
 ATTRIBUTE EXTRACTION RULES:
 - Understand the user's intention, not just the exact words.
-- Infer relevant university facilities from the user's request.
-- Include useful synonyms and related destination names.
-- Prioritize the most likely destination in a university.
-- Distinguish between different actions and purposes.
-- Do not simply translate or repeat the user's words.
-- Do not invent specific room numbers, buildings or locations.
+- Normalize phrasing into clean facility or room keywords rather than copying full phrases or sentences from the user's input.
+- Infer relevant university facilities from the user's request and include useful synonyms or related destination names only when they fit within the top 1-3 matches.
+- Prioritize the most likely destination in a university and distinguish between different actions and purposes.
+- Do not invent specific room numbers, buildings, or locations.
 - Do not include information already extracted into other fields.
-- Only include attributes relevant to the user's actual intention.
-- Return 1-3 relevant attributes, ordered by relevance.
+- Return 1-3 relevant attributes as a list of strings, ordered by relevance.
 - If the user mentions a specific facility, preserve its meaning.
 
-
 Important rules for attributes:
-- Attributes must ONLY describe what the user wants to find.
-- Do NOT include route preferences such as fastest route,
-  shortest route or quick access in attributes.
-- Do NOT include accessibility requirements such as
-  avoiding stairs, walking difficulties or using elevators
-  in attributes.
+- Attributes must ONLY describe the target facility or room the user wants to find.
+- Do NOT include route preferences (such as fastest route, shortest route, or quick access) or accessibility requirements (such as avoiding stairs, walking difficulties, or using elevators) in attributes.
 - Accessibility requirements belong in the accessibility field.
-- If the user specifies an exact room number without describing
-  another destination or facility, attributes must be null.
-- An elevator can be an attribute ONLY when the user
-  is looking for an elevator as the destination.
-
-Example:
-Input: "Jeg er gangbesværet og vil have den hurtigste vej uden trapper til rum 2.345 i bygning B"
-Output: {"attributes": null, "room_number": "2.345", "building_name": "B", "address": null, "floor_number": null, "accessibility": true}
-
+- If the user specifies an exact room number without describing another destination or facility, attributes must be null.
+- An elevator can be an attribute ONLY when the user is looking for an elevator as the destination.
 
 Language rule for `attributes`:
-- Attributes must always be in English, regardles of the input language
-
+- Attributes must always be in English, regardless of the input language.
 
 UNIVERSITY CONTEXT EXAMPLES:
 
+Input: "Jeg er gangbesværet og vil have den hurtigste vej uden trapper til rum 2.345 i bygning B"
+Output: {"attributes": null, "room_number": "2.345", "building_name": "B", "address": null, "floor_number": null, "accessibility": true}
+
 Input: "Where is the nearest restroom?"
-Output: {"attributes": "toilet", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["toilet"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Quiet study room on 2nd floor of building B, no stairs"
-Output: {"attributes": "quiet room, study room", "room_number": null, "building_name": "B", "address": null, "floor_number": 2, "accessibility": true}
+Output: {"attributes": ["quiet room", "study room"], "room_number": null, "building_name": "B", "address": null, "floor_number": 2, "accessibility": true}
 
 Input: "I am hungry, where can I buy food in the A building?"
-Output: {"attributes": "canteen, restaurant", "room_number": null, "building_name": "A", "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["canteen", "restaurant"], "room_number": null, "building_name": "A", "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Where can I buy food?"
-Output: {"attributes": "canteen, cafeteria, cafe", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["canteen", "cafeteria", "cafe"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Hvor kan jeg varme min mad?"
-Output: {"attributes": "microwave, kitchenette", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["microwave", "kitchenette"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "I'm hungry, where can I get lunch?"
-Output: {"attributes": "canteen, cafeteria, cafe", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["canteen", "cafeteria", "cafe"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Where can I eat my packed lunch?"
-Output: {"attributes": "dining area, common room", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["dining area", "common room"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "I need to talk privately with my project group"
-Output: {"attributes": "group room, meeting room", "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["group room", "meeting room"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Where can I get coffee in building A on the 2nd floor without stairs?"
-Output: {"attributes": "coffee machine, cafe", "room_number": null, "building_name": "A", "address": null, "floor_number": 2, "accessibility": true}
+Output: {"attributes": ["coffee machine", "cafe"], "room_number": null, "building_name": "A", "address": null, "floor_number": 2, "accessibility": true}
 
 Input: "Find room A203"
 Output: {"attributes": null, "room_number": "A203", "building_name": null, "address": null, "floor_number": null, "accessibility": false}

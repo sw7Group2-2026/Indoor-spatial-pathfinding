@@ -2,6 +2,7 @@ from typing import Literal
 from fastapi import FastAPI
 from pydantic import BaseModel
 from database.supa_db_handler import SupaDatabaseHandler
+from database.routing_algorithm import get_parameterised_routing_sql
 from interpreter.input_interpreter import InputInterpreter
 
 app = FastAPI()
@@ -50,26 +51,41 @@ def post_route(request: RouteRequestBody) -> RouteResponse:
     
     print(request.query)
 
-    queryString = request.query
-    startLocation = request.start_location
+    query_string = request.query
+    start_location = request.start_location
 
-    print("Query:", queryString)
-    print("Start location:", startLocation)
+    print("Query:", query_string)
+    print("Start location POINT:", start_location.point)
+    print("Start location FLOOR:", start_location.floor)
 
     queryHandler = InputInterpreter(debug = True)
-    queryResult = queryHandler.query(queryString)
+    queryResult = queryHandler.query(query_string)
     print("QUERY RESULT OBJECT: ", queryResult)
+    route_sql, params_list = get_parameterised_routing_sql(start_location,queryResult)
+    route_data = db.web_query(route_sql, params_list)
+    route_formatted = []
 
+    for row in route_data:
+        geometry = row["st_asgeojson"]
+        floor = row["floor_id"]
 
-    # startLocationSQL = getStartLocation(startLocation)
-    # targetSQL = getDestinations(queryResult)
+        if geometry["type"] != "LineString":
+            continue
 
-    # 4. Build the complete routing SQL
-    # Also maybe change the way database is fetched to ensure its parametrised
-    # Server side queries vs client side asking server has varying levels of risk in terms of SQL injection
-    # routingSQL = getRoutingSQL(startLocationSQL, targetSQL)
+        coordinates = geometry["coordinates"]
 
-    return RouteResponse(route=[startLocation])
+        for point in coordinates:
+            route_formatted.append({
+                "floor": floor,
+                "point": point
+            })
+
+    print("Route floors:", set(p["floor"] for p in route_formatted))
+
+    for point in route_formatted:
+        print(point)
+
+    return RouteResponse(route=route_formatted)
 
 @app.get("/api/maps", response_model=MapResponse)
 def get_maps():

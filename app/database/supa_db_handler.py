@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
-
 import psycopg
 from dotenv import load_dotenv
 from psycopg.rows import dict_row
+from psycopg import ClientCursor
 
 from abstractions.db_handler import DatabaseHandler
 
@@ -27,6 +27,27 @@ class SupaDatabaseHandler(DatabaseHandler):
         ) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
+
+                if cur.description is not None:
+                    return cur.fetchall()
+
+                return None
+
+
+    def web_query(self, sql: str, params=None):
+        with psycopg.connect(
+            self._connection_string,
+            sslmode="verify-full",
+            sslrootcert=self._cert,
+            row_factory=dict_row,
+            cursor_factory=ClientCursor,
+        ) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+
+                # Advance to the final SQL statement's result
+                while cur.nextset():
+                    pass
 
                 if cur.description is not None:
                     return cur.fetchall()

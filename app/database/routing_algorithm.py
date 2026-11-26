@@ -1,4 +1,6 @@
-def getDestinations(query):
+def get_destinations(query):
+    destinations_params = {}
+    destinations_sql = ""
 
     roomNumber = query.room_number
     buildingName = query.building_name
@@ -17,7 +19,15 @@ def getDestinations(query):
 
     # If there is room number focus that (maybe add check so if its the own room your in its not that)
     if roomNumber is not None:
-        return getSpecificRoom(roomNumber)
+        room_number = {"room_number": roomNumber}
+        destinations_params.update(room_number)
+        destinations_sql = """ 
+        specific_room AS (
+            SELECT indoor_space_id AS id,
+            geom, floor_id FROM indoor_space 
+                WHERE room_number=%(room_number)s),
+        """
+        return destinations_sql,destinations_params
 
     # Check for feature and room description
     if featureType and roomDescription:
@@ -50,7 +60,19 @@ def getDestinations(query):
         detail="Could not determine a destination"
     )
 
+
 def getSpecificRoom():
+    sql = """ 
+    specific_room AS (
+        SELECT indoor_space_id AS id,
+        geom, floor_id FROM indoor_space 
+            WHERE room_number='%s),
+    """
+    
+    return SQLString, Parameters
+
+def getSpecificRoom():
+
     return """ 
     specific_room AS (
         SELECT indoor_space_id AS id,
@@ -58,20 +80,32 @@ def getSpecificRoom():
             WHERE room_number='2.1.021'),
     """
 
-def getStartLocation():
+def get_start_location(startLocation):
+    point = startLocation.point
+    floor = startLocation.floor
     return """
     start_location AS (
             SELECT 0 AS id,
-            ST_SetSRID(ST_MakePoint(722847, 6172873), 25832)
-            AS geom, 1 as floor_id),
-    """
+            ST_SetSRID(ST_MakePoint(%(start_x)s, %(start_y)s), 25832)
+            AS geom, %(start_floor)s as floor_id),
+    """, {
+        "start_x": point[0],
+        "start_y": point[1],
+        "start_floor": floor
+    }
 
 
-def getRoutingSQL():
+def get_parameterised_routing_sql(start_location, queryResult):
+    parameter_list = {}
+    start_location_sql, start_location_params = get_start_location(start_location)
+    parameter_list.update(start_location_params)
+    destinations_sql, destinations_params = get_destinations(queryResult)
+    parameter_list.update(destinations_params)
+
     return """
         DROP TABLE IF EXISTS all_lines;
         CREATE TABLE all_lines AS
-        WITH """ + getSpecificRoom() +"""
+        WITH """ + destinations_sql +"""
 
             target_points AS (
             SELECT t.transition_point_id AS id,
@@ -184,7 +218,7 @@ def getRoutingSQL():
                     p.floor_id
                         FROM spatial_join_point_area_trans p
                         JOIN lines s
-                            ON p.indoor_space_id = s.id),""" + getStartLocation() + """
+                            ON p.indoor_space_id = s.id),""" + start_location_sql + """
 
             start_route AS (
             SELECT 0 AS id,
@@ -295,7 +329,7 @@ def getRoutingSQL():
         DO $$
         DECLARE
             -- A value of same type as floor_id
-            current_floor_id routing_table.floor_id%TYPE;
+            current_floor_id routing_table.floor_id%%TYPE;
         BEGIN
             FOR current_floor_id IN
                 SELECT DISTINCT floor_id
@@ -341,7 +375,7 @@ def getRoutingSQL():
 
         -- Create route with search algorithm
 
-        WITH """ + getSpecificRoom() + """
+        WITH """ + destinations_sql + """
 
         target_points AS (
             SELECT t.transition_point_id AS id,
@@ -349,7 +383,7 @@ def getRoutingSQL():
             JOIN specific_room s ON ST_Intersects(t.geom,s.geom)
             WHERE t.floor_id=s.floor_id),
         
-        """ + getStartLocation() + """
+        """ + start_location_sql + """
 
         spatial_join_start_loc_node AS (
             SELECT v.id AS node_id, s.floor_id
@@ -658,11 +692,11 @@ def getRoutingSQL():
             JOIN indoor_space i ON ST_Intersects(tn.geom,i.geom) WHERE tn.floor_id = i.floor_id
         )
 
-        SELECT b.geom FROM both_routes b JOIN final_route f ON b.using_transition_area=f.using_transition_area
-            UNION ALL SELECT geom FROM start_room_geom
-            UNION ALL SELECT geom FROM target_room_geom;
+        SELECT ST_AsGeoJSON(b.geom)::json, floor_id FROM both_routes b JOIN final_route f ON b.using_transition_area=f.using_transition_area
+            UNION ALL SELECT ST_AsGeoJSON(geom)::json, floor_id FROM start_room_geom
+            UNION ALL SELECT ST_AsGeoJSON(geom)::json, floor_id FROM target_room_geom;
         --   select geom, floor_id, total_cost from (select * from shortest_path_multiple_floors 
         --           union all select * from shortest_path_geom) where floor_id=2
                 -- union all select geom, floor_id, NULL as total_cost from indoor_navigation.indoor_space where floor_id=2
                 -- union all select geom, 0 as floor_id,  NULL as total_cost from indoor_navigation.transition_area;
-        """
+        """, parameter_list

@@ -12,15 +12,8 @@ const floors = [2,1]
 // This data below for points is simply for testing to have some base values
 const startLocation: PointOnRoute = {
   floor: 1,
-  point: [500000, 6200000],
+  point: [722900.12, 6172872.71],
 }
-
-const exampleRoute: PointOnRoute[] = [
-  startLocation,
-  { floor: 1, point: [500008, 6200000] },
-  { floor: 2, point: [500008, 6200000] },
-  { floor: 2, point: [500016, 6200004] },
-]
 
 export default function App() {
   // The first usestate is used to update which current floor is selected. Default value is 1 (floor 1)
@@ -63,7 +56,6 @@ export default function App() {
   }
 
   proj4.defs('EPSG25832', "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
-  proj4('WGS84','EPSG25832',[-122.305887, 58.9465872]);
 
 
 
@@ -74,6 +66,7 @@ export default function App() {
           <LeafletMap
             shapes={shapes}
             selectedFloor={selectedFloor}
+            route={route}
           />
         </div>
 

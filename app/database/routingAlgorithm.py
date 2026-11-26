@@ -1,3 +1,55 @@
+def getDestinations(query):
+
+    roomNumber = query.room_number
+    buildingName = query.building_name
+    address = query.address
+    floorNumber = query.floor_number
+    accessibility = query.accessibility
+    featureType = query.feature_type
+    roomDescription = query.room_description
+
+    # Building and adress related things might be there but not relevant rn
+    if buildingName is not None:
+        pass
+
+    if address is not None:
+        pass
+
+    # If there is room number focus that (maybe add check so if its the own room your in its not that)
+    if roomNumber is not None:
+        return getSpecificRoom(roomNumber)
+
+    # Check for feature and room description
+    if featureType and roomDescription:
+        return getRoomsByFeaturesAndDescription(
+            featureType,
+            roomDescription,
+            floorNumber
+        )
+
+    # Search only on features
+    if featureType:
+        return getRoomsByFeatures(
+            featureType,
+            floorNumber
+        )
+
+    # Search only on room description
+    if roomDescription:
+        return getRoomsByDescription(
+            roomDescription,
+            floorNumber
+        )
+
+    # Search only on floor number
+    if floorNumber is not None:
+        return getRoomsByFloor(floorNumber)
+
+    raise HTTPException(
+        status_code=400,
+        detail="Could not determine a destination"
+    )
+
 def getSpecificRoom():
     return """ 
     specific_room AS (

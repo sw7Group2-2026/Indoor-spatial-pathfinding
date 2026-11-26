@@ -2,6 +2,7 @@ from typing import Literal
 from fastapi import FastAPI
 from pydantic import BaseModel
 from database.supa_db_handler import SupaDatabaseHandler
+from interpreter.input_interpreter import InputInterpreter
 
 app = FastAPI()
 
@@ -39,9 +40,6 @@ db = SupaDatabaseHandler()
 def post_route(request: RouteRequestBody) -> RouteResponse:
     # BUILD THE ROUTE IN HERE SO HERE IS THE SQL FOR GETTING THE ROUTE
     # ALSO THE CODE FOR QUERYING LLM
-    # request.query
-    # request.startLocation
-
     # STRUCTURE FOR THE WHOLE ENTIRE PROCESS
     # First save query and startlocation in variables
     # Pass query to the LLM sandwich and get a structured output object
@@ -51,6 +49,16 @@ def post_route(request: RouteRequestBody) -> RouteResponse:
     # Return the route from the routing query to be displayed in the frontend
     
 
+    queryString = request.query
+    startLocation = request.startLocation
+    queryHandler = InputInterpreter()
+    queryResult = queryHandler.query(queryString)
+
+    startLocationSQL = getStartLocation(startLocation)
+    targetSQL = getDestinations(queryResult)
+
+    # 4. Build the complete routing SQL
+    routingSQL = getRoutingSQL(startLocationSQL, targetSQL)
 
     return RouteResponse(route=route)
 

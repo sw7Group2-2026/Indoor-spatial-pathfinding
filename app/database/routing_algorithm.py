@@ -17,7 +17,7 @@ def get_destinations(query):
     if address is not None:
         pass
 
-    # If there is room number focus that (maybe add check so if its the own room your in its not that)
+    # This function needs to filter destinations based on all the query params (structured output)
     if roomNumber is not None:
         room_number = {"room_number": roomNumber}
         destinations_params.update(room_number)
@@ -29,56 +29,24 @@ def get_destinations(query):
         """
         return destinations_sql,destinations_params
 
-    # Check for feature and room description
-    if featureType and roomDescription:
-        return getRoomsByFeaturesAndDescription(
-            featureType,
-            roomDescription,
-            floorNumber
-        )
-
-    # Search only on features
-    if featureType:
-        return getRoomsByFeatures(
-            featureType,
-            floorNumber
-        )
-
-    # Search only on room description
-    if roomDescription:
-        return getRoomsByDescription(
-            roomDescription,
-            floorNumber
-        )
-
-    # Search only on floor number
-    if floorNumber is not None:
-        return getRoomsByFloor(floorNumber)
-
     raise HTTPException(
         status_code=400,
         detail="Could not determine a destination"
     )
 
 
-def getSpecificRoom():
-    sql = """ 
-    specific_room AS (
-        SELECT indoor_space_id AS id,
-        geom, floor_id FROM indoor_space 
-            WHERE room_number='%s),
-    """
+def accessibility_sql(accessibility_bool):
+    accessibility_params = {}
+    accessibility_bool = {"accessibility_bool": accessibility_bool}
+    accessibility_params.update(accessibility_bool)
     
-    return SQLString, Parameters
-
-def getSpecificRoom():
-
-    return """ 
+    accessibility_sql = """ 
     specific_room AS (
         SELECT indoor_space_id AS id,
         geom, floor_id FROM indoor_space 
-            WHERE room_number='2.1.021'),
+            WHERE room_number=%(room_number)s),
     """
+    return accessibility_sql,accessibility_params
 
 def get_start_location(startLocation):
     point = startLocation.point
@@ -101,6 +69,9 @@ def get_parameterised_routing_sql(start_location, queryResult):
     parameter_list.update(start_location_params)
     destinations_sql, destinations_params = get_destinations(queryResult)
     parameter_list.update(destinations_params)
+
+    # acessibility_bool = queryResult.accessibility
+    # accessibility_sql, accessibility_params = get_acessibility(acessibility_bool)
 
     return """
         DROP TABLE IF EXISTS all_lines;

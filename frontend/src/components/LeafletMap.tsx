@@ -1,6 +1,7 @@
 
 import { MapContainer, TileLayer, Polygon, Polyline } from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
+import L from 'leaflet'
 import type { Shape, Coordinate, RouteSegment } from '../../types'
 import { useEffect } from 'react'
 import proj4 from 'proj4'
@@ -44,6 +45,13 @@ export default function LeafletMap({
       })
     )
 
+  L.Map.include({
+    latLngToLayerPoint(latlng: LatLngExpression) {
+      return this.project(L.latLng(latlng))
+        .subtract(this.getPixelOrigin())
+    },
+  })
+
   // Leaflet but for react
   return (
     <MapContainer
@@ -51,6 +59,7 @@ export default function LeafletMap({
       zoom={19}
       minZoom={5}
       maxZoom={22}
+      preferCanvas={true}
       style={{ height: '100%', width: '100%' }}
     >
       <TileLayer
@@ -63,7 +72,12 @@ export default function LeafletMap({
           <Polygon
             key={index}
             positions={shape.polygon}
-            pathOptions={{ color: 'blue', weight: 1 }}
+            smoothFactor={0}
+            noClip={true}
+            pathOptions={{
+              color: 'blue',
+              weight: 0.5,
+            }}
           />
         ))}
       <Polyline

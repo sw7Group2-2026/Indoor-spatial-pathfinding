@@ -40,7 +40,7 @@ class RouteRequestBody(BaseModel):
 
 
 db = SupaDatabaseHandler()
-queryHandler = InputInterpreter(debug = True)
+queryHandler = InputInterpreter()
 
 @app.post("/api/route", response_model=RouteResponse)
 def post_route(request: RouteRequestBody) -> RouteResponse:
@@ -58,7 +58,11 @@ def post_route(request: RouteRequestBody) -> RouteResponse:
     query_string = request.query
     start_location = request.start_location
     queryResult = queryHandler.query(query_string)
-    print("QUERY RESULT OBJECT: ", queryResult)
+
+    # Parameterised routing has 3 params
+    # Start location
+    # Query result (used for generating destinations sql)
+    # Accessibility boolean, which defines if the route needs to use elevators n stuff or not
     route_sql, params_list = get_parameterised_routing_sql(start_location,queryResult)
     route_data = db.web_query(route_sql, params_list)
 
@@ -73,11 +77,6 @@ def post_route(request: RouteRequestBody) -> RouteResponse:
                 "floor": floor,
                 "points": geometry["coordinates"]
             })
-
-    print("Route floors:", set(p["floor"] for p in route_formatted))
-
-    for point in route_formatted:
-        print(point)
 
     return RouteResponse(route=route_formatted)
 

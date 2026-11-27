@@ -36,6 +36,7 @@ class RouteRequestBody(BaseModel):
 
 
 db = SupaDatabaseHandler()
+queryHandler = InputInterpreter(debug = True)
 
 @app.post("/api/route", response_model=RouteResponse)
 def post_route(request: RouteRequestBody) -> RouteResponse:
@@ -57,8 +58,6 @@ def post_route(request: RouteRequestBody) -> RouteResponse:
     print("Query:", query_string)
     print("Start location POINT:", start_location.point)
     print("Start location FLOOR:", start_location.floor)
-
-    queryHandler = InputInterpreter(debug = True)
     queryResult = queryHandler.query(query_string)
     print("QUERY RESULT OBJECT: ", queryResult)
     route_sql, params_list = get_parameterised_routing_sql(start_location,queryResult)

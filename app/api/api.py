@@ -26,8 +26,12 @@ class PointOnRoute(BaseModel):
     floor: int
     point: tuple[float, float]
 
+class RouteSegment(BaseModel):
+    floor: int
+    points: list[list[float]]
+
 class RouteResponse(BaseModel):
-    route: list[PointOnRoute]
+    route: list[RouteSegment]
 
 class RouteRequestBody(BaseModel):
     query: str
@@ -50,33 +54,24 @@ def post_route(request: RouteRequestBody) -> RouteResponse:
     # Pass the start location and target SQL variable queries into the routing query
     # Return the route from the routing query to be displayed in the frontend
     
-    print(request.query)
 
     query_string = request.query
     start_location = request.start_location
-
-    print("Query:", query_string)
-    print("Start location POINT:", start_location.point)
-    print("Start location FLOOR:", start_location.floor)
     queryResult = queryHandler.query(query_string)
     print("QUERY RESULT OBJECT: ", queryResult)
     route_sql, params_list = get_parameterised_routing_sql(start_location,queryResult)
     route_data = db.web_query(route_sql, params_list)
-    route_formatted = []
 
+    route_formatted = []
+ 
     for row in route_data:
         geometry = row["st_asgeojson"]
         floor = row["floor_id"]
 
-        if geometry["type"] != "LineString":
-            continue
-
-        coordinates = geometry["coordinates"]
-
-        for point in coordinates:
+        if geometry["type"] == "LineString":
             route_formatted.append({
                 "floor": floor,
-                "point": point
+                "points": geometry["coordinates"]
             })
 
     print("Route floors:", set(p["floor"] for p in route_formatted))

@@ -1,14 +1,14 @@
 
 import { MapContainer, TileLayer, Polygon, Polyline } from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
-import type { Shape, Coordinate, PointOnRoute } from '../../types'
+import type { Shape, Coordinate, RouteSegment } from '../../types'
 import { useEffect } from 'react'
 import proj4 from 'proj4'
 
 type LeafletMapProps = {
   shapes: Shape[]
   selectedFloor: number
-  route: PointOnRoute[]
+  route: RouteSegment[]
 }
 
 export default function LeafletMap({
@@ -35,13 +35,14 @@ export default function LeafletMap({
     }))
     .filter((shape) => shape.polygon.length >= 3)
 
-    const points: LatLngExpression[] = route
-    .filter((routePoint) => routePoint.floor === selectedFloor)
-    .map(({ point: [x, y] }): Coordinate => {
-      const [lng, lat] = proj4('EPSG:25832', 'WGS84', [x, y])
-      return [lat, lng]
-    })
-
+  const points: LatLngExpression[][] = route
+    .filter((segment) => segment.floor === selectedFloor)
+    .map((segment) =>
+      segment.points.map(([x, y]): Coordinate => {
+        const [lng, lat] = proj4('EPSG:25832', 'WGS84', [x, y])
+        return [lat, lng]
+      })
+    )
 
   // Leaflet but for react
   return (
@@ -71,7 +72,6 @@ export default function LeafletMap({
           color: 'red',
           weight: 1,
           opacity: 0.8,
-          dashArray: '3, 7',
         }}
       />
     </MapContainer>

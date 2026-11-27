@@ -27,11 +27,11 @@ export interface MapResponse {
 }
 
 
-export interface PointOnRoute {
+export interface RouteSegment {
     floor: number
-    point: Coordinate
+    points: Coordinate[]
 }
 
 export interface RouteResponse {
-    route: PointOnRoute[]
+    route: RouteSegment[]
 }

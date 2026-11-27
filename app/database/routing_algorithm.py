@@ -370,8 +370,8 @@ def get_parameterised_routing_sql(start_location, queryResult):
         UPDATE routing_table_noded
         SET reverse_cost = cost;
 
-        SELECT pgr_createTopology('routing_table_noded',1,'geom','id');
-        SELECT pgr_analyzeGraph('routing_table_noded',1,'geom','id');
+        SELECT pgr_createTopology('routing_table_noded',0.01,'geom','id');
+        SELECT pgr_analyzeGraph('routing_table_noded',0.01,'geom','id');
 
         -- Create route with search algorithm
 

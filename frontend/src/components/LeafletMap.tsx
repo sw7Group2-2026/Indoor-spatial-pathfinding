@@ -69,7 +69,7 @@ export default function LeafletMap({
         positions={points}
         pathOptions={{
           color: 'red',
-          weight: 3,
+          weight: 1,
           opacity: 0.8,
           dashArray: '3, 7',
         }}

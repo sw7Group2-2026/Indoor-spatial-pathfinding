@@ -7,7 +7,7 @@ class UserQuery(BaseModel):
     building_name: str | None
     address: str | None
     floor_number: int | None
-    accessibility: bool
+    accessibility: bool | None
 
     @classmethod
     def getJson(cls):

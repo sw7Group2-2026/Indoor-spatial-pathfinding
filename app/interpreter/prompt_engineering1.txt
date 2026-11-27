@@ -12,8 +12,13 @@ Fields:
 - building_name: A, B, C etc., or null
 - address: street/location address, or null
 - floor_number: single integer floor, or null
-- accessibility: true if elevators are required / stairs avoided, otherwise false
+- accessibility: true if elevators are preferred/required or mobility issues/disabilities are mentioned, false ONLY if the user explicitly asks to avoid elevators or take stairs only, otherwise null
 - attributes: list of strings of descriptive keywords not already in the other fields (no duplicates), or null
+
+ACCESSIBILITY RULES:
+- Set accessibility to true when the user prefers elevators, wants to avoid stairs, or mentions mobility issues, disabilities, wheelchairs, crutches, or difficulty walking (e.g., "gangbesværet", "kørestol", "uden trapper", "tag elevatoren").
+- Set accessibility to false ONLY when the user explicitly requests to avoid elevators or use stairs only (e.g., "use the stairs", "no elevator", "tag trapperne", "ingen elevator").
+- In all other cases (when stairs, elevators, or mobility are not mentioned), accessibility MUST be null.
 
 ATTRIBUTE EXTRACTION RULES:
 - Understand the user's intention, not just the exact words.
@@ -41,31 +46,31 @@ Input: "Jeg er gangbesværet og vil have den hurtigste vej uden trapper til rum 
 Output: {"attributes": null, "room_number": "2.345", "building_name": "B", "address": null, "floor_number": null, "accessibility": true}
 
 Input: "Where is the nearest restroom?"
-Output: {"attributes": ["toilet"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["toilet"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": null}
 
 Input: "Quiet study room on 2nd floor of building B, no stairs"
 Output: {"attributes": ["quiet room", "study room"], "room_number": null, "building_name": "B", "address": null, "floor_number": 2, "accessibility": true}
 
-Input: "I am hungry, where can I buy food in the A building?"
+Input: "I am hungry, where can I buy food in the A building? I'd like to take the stairs"
 Output: {"attributes": ["canteen", "restaurant"], "room_number": null, "building_name": "A", "address": null, "floor_number": null, "accessibility": false}
 
 Input: "Where can I buy food?"
-Output: {"attributes": ["canteen", "cafeteria", "cafe"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["canteen", "cafeteria", "cafe"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": null}
 
 Input: "Hvor kan jeg varme min mad?"
-Output: {"attributes": ["microwave", "kitchenette"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["microwave", "kitchenette"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": null}
 
 Input: "I'm hungry, where can I get lunch?"
-Output: {"attributes": ["canteen", "cafeteria", "cafe"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["canteen", "cafeteria", "cafe"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": null}
 
 Input: "Where can I eat my packed lunch?"
-Output: {"attributes": ["dining area", "common room"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["dining area", "common room"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": null}
 
 Input: "I need to talk privately with my project group"
-Output: {"attributes": ["group room", "meeting room"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": ["group room", "meeting room"], "room_number": null, "building_name": null, "address": null, "floor_number": null, "accessibility": null}
 
 Input: "Where can I get coffee in building A on the 2nd floor without stairs?"
 Output: {"attributes": ["coffee machine", "cafe"], "room_number": null, "building_name": "A", "address": null, "floor_number": 2, "accessibility": true}
 
 Input: "Find room A203"
-Output: {"attributes": null, "room_number": "A203", "building_name": null, "address": null, "floor_number": null, "accessibility": false}
+Output: {"attributes": null, "room_number": "A203", "building_name": null, "address": null, "floor_number": null, "accessibility": null}

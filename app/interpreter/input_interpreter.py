@@ -23,7 +23,7 @@ class QueryResult:
     building_name: str | None = None
     address: str | None = None
     floor_number: int | None = None
-    accessibility: bool = False
+    accessibility: bool | None = None
     feature_type: list[str] | None = None
     room_description: list[str] | None = None
 
@@ -54,7 +54,7 @@ class InputInterpreter:
             building_name=structured_output.get("building_name"),
             address=structured_output.get("address"),
             floor_number=structured_output.get("floor_number"),
-            accessibility=bool(structured_output.get("accessibility", False)),
+            accessibility=structured_output.get("accessibility"),
         )
 
         # If there are any attributes extracted by initial_LLM,
@@ -135,7 +135,7 @@ class InputInterpreter:
             response["metadatas"],
             response["distances"],
         ):
-            print(f"\nSøgning: {word}")
+            print(f"\nSÃ¸gning: {word}")
 
             for document, metadata, distance in zip(documents, metadatas, distances):
                 print(f"{document}, {metadata}: {distance:.4f}")

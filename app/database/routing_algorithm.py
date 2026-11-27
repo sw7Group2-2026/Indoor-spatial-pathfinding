@@ -35,18 +35,10 @@ def get_destinations(query):
     )
 
 
-def accessibility_sql(accessibility_bool):
-    accessibility_params = {}
-    accessibility_bool = {"accessibility_bool": accessibility_bool}
-    accessibility_params.update(accessibility_bool)
-    
-    accessibility_sql = """ 
-    specific_room AS (
-        SELECT indoor_space_id AS id,
-        geom, floor_id FROM indoor_space 
-            WHERE room_number=%(room_number)s),
-    """
-    return accessibility_sql,accessibility_params
+def get_accessibility_sql(accessibility_bool):
+    s_accessibility_sql = """ AND WHERE s.acessibility = %(accessibility_bool)s) """
+    ta_accessibility_sql = """ AND WHERE ta.accessibility = %(accessibility_bool)s) """
+    return s_accessibility_sql,ta_accessibility_sql, {"accessibility_bool": accessibility_bool}
 
 def get_start_location(startLocation):
     point = startLocation.point
@@ -70,8 +62,11 @@ def get_parameterised_routing_sql(start_location, queryResult):
     destinations_sql, destinations_params = get_destinations(queryResult)
     parameter_list.update(destinations_params)
 
-    # acessibility_bool = queryResult.accessibility
-    # accessibility_sql, accessibility_params = get_acessibility(acessibility_bool)
+    accessibility_s, accesibility_ta, accessibility_params = "", "", {}
+    accessibility_bool = queryResult.accessibility
+    if(accessibility_bool != None):
+            accessibility_s, accesibility_ta, accessibility_params = get_accessibility_sql(accessibility_bool)
+    parameter_list.update(accessibility_params)
 
     return """
         DROP TABLE IF EXISTS all_lines;
@@ -96,7 +91,8 @@ def get_parameterised_routing_sql(start_location, queryResult):
             Select transition_point_id AS id,
             (ST_Dump(transition_point.geom)).geom AS geom,
             transition_point.floor_id AS floor_id,
-            transition_area_id AS transition_area_id, c.id AS indoor_space_id
+            transition_area_id AS transition_area_id, c.id AS indoor_space_id,
+            transition_area.accessibility as accessibility
         
         
             FROM transition_point JOIN transition_area 
@@ -116,7 +112,7 @@ def get_parameterised_routing_sql(start_location, queryResult):
             FROM spatial_join_point_area_trans s
             JOIN spatial_join_point_area_trans t
             ON s.transition_area_id = t.transition_area_id and s.floor_id=t.floor_id
-            WHERE s.id < t.id),
+            WHERE s.id < t.id """ + accessibility_s + """"),
         
                 
             nearest_line AS (
@@ -446,7 +442,7 @@ def get_parameterised_routing_sql(start_location, queryResult):
                 WHERE tp.floor_id = (
                     SELECT floor_id
                     FROM start_location
-                )
+                ) """ + accesibility_ta + """
             ),
             
             routes_to_transition_area AS (
